@@ -8,7 +8,7 @@ El propósito de este proyecto es desarrollar un sistema que permita crear salas
 ## 2. Dependencias y entorno de desarrollo
 <!-- NOTA: Si añades librerías en el pom.xml (ej. SparkJava, Javalin, Jackson, Gson, SQLite...), añádelas a esta lista -->
 * **JDK:** Oracle OpenJDK 27.
-* **Gestor de construcción:** Apache Maven (`pom.xml`).
+* **Gestor de construcción:** Apache Maven (`pom.xml` autónomo por módulo).
 * **Dependencias actuales:**
   * `JUnit 5 (Jupiter)`: Para la ejecución de pruebas unitarias automatizadas.
   * `AssertJ Core (3.27.7)`: Librería de aserciones fluidas para las pruebas unitarias (`scope: test`).
@@ -16,11 +16,15 @@ El propósito de este proyecto es desarrollar un sistema que permita crear salas
 ## 3. Compilación y ejecución
 
 ### Compilación del núcleo y ejecución de pruebas
-Desde el directorio raíz del proyecto, ejecutar:
+El núcleo de la lógica del ajedrez se encuentra aislado en el módulo `game`. Para compilar y ejecutar las pruebas:
 
 ```bash
-mvn clean compile
-mvn test
+# Opción 1: Desde la raíz del repositorio indicando el POM del módulo
+mvn -f game/pom.xml clean test
+
+# Opción 2: Entrando al directorio del módulo
+cd game
+mvn clean test
 ```
 
 ### Ejecución del Backend y Frontend
@@ -29,16 +33,29 @@ mvn test
 
 ## 4. Estructura del proyecto
 <!-- NOTA: Actualiza este árbol si creas nuevos paquetes (ej. application / usecases, persistence, ui, network...) -->
-El código fuente se organiza en paquetes que reflejan la separación de responsabilidades de la arquitectura hexagonal:
+El proyecto se organiza en módulos autónomos e independientes. El módulo `game` refleja una separación estricta de responsabilidades bajo arquitectura hexagonal:
 
 ```text
-src/
-├── main/java/software/ulpgc/chess/
-│   ├── domain/model/   # Entidades y objetos de valor del dominio
-│   ├── ports/          # Interfaces de entrada y salida
-│   ├── adapters/       # Implementaciones de serialización y formato
-│   └── Main.java
-└── test/java/tests/    # Pruebas unitarias
+game/
+├── pom.xml                                     # Descriptor de construcción del módulo
+└── src/
+    ├── main/java/software/ulpgc/chess/
+    │   ├── application/                        # El Core (Puro, sin dependencias externas)
+    │   │   ├── domain/model/                   # Entidades y objetos de valor inmutables
+    │   │   ├── ports/                          # Interfaces de entrada y salida
+    │   │   │   ├── serializer/                 # Puertos de salida (escritura)
+    │   │   │   └── deserializer/               # Puertos de entrada (lectura)
+    │   │   └── usecases/                       # Casos de uso del juego
+    │   ├── infrastructure/                     # El Exterior (Traducción y comunicación)
+    │   │   └── adapters/                       # Implementaciones agrupadas por formato
+    │   │       ├── algebraic/                  # Notación algebraica (casillas)
+    │   │       ├── fen/                        # Notación FEN (tablero y estado)
+    │   │       └── uci/                        # Protocolo UCI (movimientos)
+    │   └── Main.java                           # Composition Root / cableado
+    └── test/java/tests/                        # Pruebas unitarias automatizadas
+        ├── algebraic/                          # Tests de adaptadores algebraicos
+        ├── fen/                                # Tests de adaptadores FEN
+        └── uci/                                # Tests de adaptadores UCI
 ```
 
 ## 5. Arquitectura de sistemas
@@ -49,29 +66,36 @@ src/
 
 ## 6. Arquitectura hexagonal del Backend
 
-### Dominio (`software.ulpgc.chess.domain.model`)
+### Dominio (`software.ulpgc.chess.application.domain.model`)
 <!-- NOTA: Si añades nuevas clases al modelo (ej. Room, User, Game, Rules...) o casos de uso, documéntalos aquí -->
 Contiene las estructuras de datos inmutables y la representación lógica del ajedrez, sin dependencias hacia librerías externas ni formatos de transporte:
 * `Board`: Gestiona la disposición de las piezas en el tablero mediante una estructura inmutable (`Map<Square, Piece>`). Proporciona la configuración inicial y la transición de estado al aplicar movimientos (`move()`).
 * `Square`: Record que representa una casilla del tablero a partir de su columna (`File`) y fila (`Rank`).
 * `Move`: Record que modela un desplazamiento entre una casilla de origen (`from`) y una de destino (`to`).
 * `Piece`, `Color`, `File`, `Rank`: Enumerados que definen las piezas, bandos y límites geométricos del tablero (`a-h`, `1-8`).
-* `State`: Clase destinada a encapsular el estado global de la partida (turnos, derechos de enroque, captura al paso y contadores).
+* `State`: Encapsula el estado global de la partida (turnos, derechos de enroque, captura al paso y contadores).
 
-### Puertos (`software.ulpgc.chess.ports`)
+### Puertos (`software.ulpgc.chess.application.ports`)
 <!-- NOTA: Cuando crees puertos para guardar partidas en base de datos (ej. GameRepository) o gestionar salas, añádelos a esta lista -->
-Interfaces que establecen los contratos para transformar objetos del dominio a representaciones externas y viceversa:
-* `PositionSerializer` / `PositionDeserializer`: Conversión de coordenadas (`Square`).
-* `BoardSerializer` / `BoardDeserializer`: Conversión de la disposición del tablero (`Board`).
-* `MoveSerializer` / `MoveDeserializer`: Conversión de movimientos (`Move`).
-* `StateDeserializer`: Lectura del estado de partida (`State`).
+Interfaces segregadas (ISP extremo) que establecen los contratos para transformar objetos del dominio a representaciones externas y viceversa:
 
-### Adaptadores (`software.ulpgc.chess.adapters`)
+* **Puertos de salida (`ports.serializer`):**
+  * `PositionSerializer`: Serialización de coordenadas (`Square`).
+  * `BoardSerializer`: Serialización de la disposición del tablero (`Board`).
+  * `MoveSerializer`: Serialización de desplazamientos (`Move`).
+
+* **Puertos de entrada (`ports.deserializer`):**
+  * `PositionDeserializer`: Deserialización de coordenadas (`Square`).
+  * `BoardDeserializer`: Deserialización del tablero (`Board`).
+  * `MoveDeserializer`: Deserialización de desplazamientos (`Move`).
+  * `StateDeserializer`: Lectura y deserialización del estado global de partida (`State`).
+
+### Adaptadores (`software.ulpgc.chess.infrastructure.adapters`)
 <!-- NOTA: Cuando implementes los adaptadores web (controladores HTTP/WebSocket) o de base de datos (SQLite, memoria...), añádelos aquí -->
-Implementaciones de los puertos utilizando notaciones estándar de ajedrez:
-* **Notación Algebraica:** `AlgebraicPositionSerializer` y `AlgebraicPositionDeserializer` para coordenadas individuales (ej. `"e4"`).
-* **Notación FEN (Forsyth-Edwards Notation):** `FenBoardSerializer`, `FenBoardDeserializer` y `FenStateDeserializer` para representar el estado del tablero en cadenas de texto compactas.
-* **Protocolo UCI (Universal Chess Interface):** `UciMoveSerializer` y `UciMoveDeserializer` para representar movimientos en formato origen-destino (ej. `"e2e4"`), delegando la resolución de coordenadas en los adaptadores algebraicos.
+Implementaciones concretas de los puertos organizadas por tecnología o formato:
+* **Notación Algebraica (`adapters.algebraic`):** `AlgebraicPositionSerializer` y `AlgebraicPositionDeserializer` para coordenadas individuales (ej. `"e4"`).
+* **Notación FEN (`adapters.fen`):** `FenBoardSerializer`, `FenBoardDeserializer` y `FenStateDeserializer` para representar el tablero y el estado de la partida en cadenas compactas.
+* **Protocolo UCI (`adapters.uci`):** `UciMoveSerializer` y `UciMoveDeserializer` para representar movimientos en formato origen-destino (ej. `"e2e4"`), delegando la resolución de coordenadas en los adaptadores algebraicos.
 
 ## 7. Arquitectura hexagonal ligera del Frontend
 <!-- NOTA: Documenta aquí las clases/módulos del frontend:
@@ -103,11 +127,10 @@ Implementaciones de los puertos utilizando notaciones estándar de ajedrez:
 <!-- NOTA: 
      - Si añades más clases de test en el paquete `tests` (incluyendo pruebas con Mocks / dobles de prueba), añádelas al listado.
      - Documenta también las pruebas manuales que pide la rúbrica (conectar 2 usuarios, probar qué pasa si mandas un movimiento inválido o pides una sala que no existe). -->
-El repositorio incluye pruebas unitarias automatizadas con JUnit 5 y AssertJ en el paquete `tests`, verificando la conversión de formatos y los casos límite del tablero:
-* `AlgebraicPositionSerializerTest` y `AlgebraicPositionDeserializerTest`.
-* `FenBoardSerializerTest` y `FenBoardDeserializerTest`.
-* `FenStateDeserializerTest`.
-* `UciMoveSerializerTest` y `UciMoveDeserializerTest`.
+El repositorio incluye 25 pruebas unitarias automatizadas con JUnit 5 y AssertJ en el módulo `game`, organizadas por formato:
+* **`tests.algebraic`:** `AlgebraicPositionSerializerTest` y `AlgebraicPositionDeserializerTest`.
+* **`tests.fen`:** `FenBoardSerializerTest`, `FenBoardDeserializerTest` y `FenStateDeserializerTest`.
+* **`tests.uci`:** `UciMoveSerializerTest` y `UciMoveDeserializerTest`.
 
 ## 12. Límites conocidos
 <!-- NOTA: Actualiza esta sección según avances. Sé transparente con qué reglas de ajedrez validas y cuáles no (ej. si no implementas jaque mate o tablas por triple repetición), o límites de concurrencia. -->
