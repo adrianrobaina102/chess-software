@@ -1,36 +1,42 @@
 package software.ulpgc.chess;
 
 import io.javalin.Javalin;
-import software.ulpgc.chess.application.domain.model.Board;
-import software.ulpgc.chess.application.domain.model.State;
 import software.ulpgc.chess.application.ports.deserializer.BoardDeserializer;
-import software.ulpgc.chess.application.ports.deserializer.StateDeserializer;
+import software.ulpgc.chess.application.ports.deserializer.MoveDeserializer;
 import software.ulpgc.chess.application.ports.serializer.BoardSerializer;
 import software.ulpgc.chess.application.usecases.GetInitialBoardUseCase;
+import software.ulpgc.chess.application.usecases.MovePieceUseCase;
 import software.ulpgc.chess.infrastructure.adapters.endpoints.GetInitialBoardEndPoint;
+import software.ulpgc.chess.infrastructure.adapters.endpoints.MovePieceEndPoint;
 import software.ulpgc.chess.infrastructure.adapters.fen.FenBoardDeserializer;
 import software.ulpgc.chess.infrastructure.adapters.fen.FenBoardSerializer;
-import software.ulpgc.chess.infrastructure.adapters.fen.FenStateDeserializer;
+import software.ulpgc.chess.infrastructure.adapters.uci.UciMoveDeserializer;
 
-// == compara direccion .equals Compara el objeto
 public class Main {
     public static void main(String[] args) {
-        BoardDeserializer boarDeserializer = new FenBoardDeserializer();
-        StateDeserializer stateDeserializer = new FenStateDeserializer();
-        String fenString = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-        Board board = boarDeserializer.deserialize(fenString);
-        State state = stateDeserializer.deserialize(fenString);
-        System.out.println(board);
-        System.out.println(state.toString());
-
-
+        // 1. Adaptadores compartidos
         BoardSerializer boardSerializer = new FenBoardSerializer();
-        GetInitialBoardUseCase getInitialBoardUseCase = new GetInitialBoardUseCase(boardSerializer);
+        BoardDeserializer boardDeserializer = new FenBoardDeserializer();
+        MoveDeserializer moveDeserializer = new UciMoveDeserializer();
 
+        // 2. Casos de uso (Pure DI)
+        GetInitialBoardUseCase getInitialBoardUseCase = new GetInitialBoardUseCase(boardSerializer);
+        MovePieceUseCase movePieceUseCase = new MovePieceUseCase(boardDeserializer, moveDeserializer, boardSerializer);
+
+        // 3. Servidor Javalin
         Javalin app = Javalin.create().start(7070);
+
+        // 4. Endpoints
         app.get("/api/board/initial", context -> {
             new GetInitialBoardEndPoint(getInitialBoardUseCase, context).execute();
         });
-        System.out.println("Servidor iniciado en http://localhost:7070/api/board/initial");
+
+        app.get("/api/board/move", context -> {
+            new MovePieceEndPoint(movePieceUseCase, context).execute();
+        });
+
+        System.out.println("Servidor iniciado:");
+        System.out.println(" - Tablero inicial: http://localhost:7070/api/board/initial");
+        System.out.println(" - Mover pieza:     http://localhost:7070/api/board/move?board=...&move=e2e4");
     }
 }
