@@ -1,10 +1,13 @@
 package software.ulpgc.chess;
 
+import io.javalin.Javalin;
 import software.ulpgc.chess.application.domain.model.Board;
 import software.ulpgc.chess.application.domain.model.State;
 import software.ulpgc.chess.application.ports.deserializer.BoardDeserializer;
 import software.ulpgc.chess.application.ports.deserializer.StateDeserializer;
 import software.ulpgc.chess.application.ports.serializer.BoardSerializer;
+import software.ulpgc.chess.application.usecases.GetInitialBoardUseCase;
+import software.ulpgc.chess.infrastructure.adapters.endpoints.GetInitialBoardEndPoint;
 import software.ulpgc.chess.infrastructure.adapters.fen.FenBoardDeserializer;
 import software.ulpgc.chess.infrastructure.adapters.fen.FenBoardSerializer;
 import software.ulpgc.chess.infrastructure.adapters.fen.FenStateDeserializer;
@@ -19,8 +22,15 @@ public class Main {
         State state = stateDeserializer.deserialize(fenString);
         System.out.println(board);
         System.out.println(state.toString());
-        Board boardInitial = Board.initial();
-        BoardSerializer serializer = new FenBoardSerializer();
-        System.out.println(serializer.serialize(boardInitial));
+
+
+        BoardSerializer boardSerializer = new FenBoardSerializer();
+        GetInitialBoardUseCase getInitialBoardUseCase = new GetInitialBoardUseCase(boardSerializer);
+
+        Javalin app = Javalin.create().start(7070);
+        app.get("/api/board/initial", context -> {
+            new GetInitialBoardEndPoint(getInitialBoardUseCase, context).execute();
+        });
+        System.out.println("Servidor iniciado en http://localhost:7070/api/board/initial");
     }
 }

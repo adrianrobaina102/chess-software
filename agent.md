@@ -47,9 +47,11 @@ game/src/main/java/software/ulpgc/chess/
 │       │   ├── FenBoardDeserializer
 │       │   └── FenStateDeserializer
 │       │
-│       └── uci/                         <-- Protocolo UCI
-│           ├── UciMoveSerializer
-│           └── UciMoveDeserializer
+│       ├── uci/                         <-- Protocolo UCI
+│       │   ├── UciMoveSerializer
+│       │   └── UciMoveDeserializer
+│       │
+│       └── endpoints/                   <-- Adaptadores de entrada Web (Javalin)
 │
 └── Main.java                            <-- Composition root / cableado de dependencias
 ```
@@ -70,7 +72,7 @@ El proyecto sigue una convención de nombres estricta:
 2. **Puertos (`application.ports`):** Separados por dirección de operación:
    - `ports.serializer`: Puertos de salida nombrados como `<Entidad>Serializer`.
    - `ports.deserializer`: Puertos de entrada nombrados como `<Entidad>Deserializer`.
-3. **Adaptadores (`infrastructure.adapters.<formato>`):** Clases concretas nombradas estrictamente como `<Formato/Librería><NombreDelPuerto>` ubicadas en el subpaquete de su formato correspondiente (`adapters.algebraic`, `adapters.fen`, `adapters.uci`).
+3. **Adaptadores (`infrastructure.adapters.<formato>`):** Clases concretas nombradas estrictamente como `<Formato/Librería><NombreDelPuerto>` ubicadas en el subpaquete de su formato correspondiente (`adapters.algebraic`, `adapters.fen`, `adapters.uci`), o `<Recurso>EndPoint` en `adapters.endpoints`.
 4. **Tests (`tests.<formato>`):** Nombradas exactamente como `<NombreDeLaClase>Test` utilizando JUnit 5 y AssertJ.
 
 ---
@@ -88,4 +90,32 @@ Ninguna clase del proyecto (ni siquiera dentro de `infrastructure.adapters`) deb
       }
       // ...
   }
+  ```
+
+---
+
+## 5. Reglas de Integración HTTP (Servidor Web con Javalin)
+El sistema expone su lógica de negocio al exterior mediante una API HTTP utilizando **Javalin**. La integración debe respetar estrictamente la Arquitectura Hexagonal y la Inversión de Control:
+
+### A. Aislamiento del Core (Application)
+- **Cero dependencias web:** El directorio `application` (Dominio, Casos de Uso y Puertos) **jamás** debe importar clases de Javalin (como `Context`), ni saber que existe un servidor web.
+- Los Casos de Uso orquestan la lógica y devuelven tipos primitivos, objetos del dominio, o `String` (usando un puerto de serialización) de vuelta al adaptador que los llamó.
+
+### B. Adaptadores de Entrada Web (Endpoints)
+- Se alojan en `infrastructure.adapters.endpoints`.
+- **Misión de Traducción:** Un `EndPoint` actúa como traductor bilingüe entre Javalin y el Core.
+- **Regla de Inyección:** Deben recibir por constructor el/los Casos de Uso necesarios y el objeto `Context` de Javalin.
+- **Flujo estricto del método `execute()`:**
+  1. Extraer los parámetros de la petición HTTP (`context.queryParam(...)`, `context.pathParam(...)`, o `context.body()`).
+  2. Ejecutar el Caso de Uso pasándole **solo** tipos de Java estándar (`String`, `int`, etc.).
+  3. Recoger el resultado devuelto por el Caso de Uso.
+  4. Enviar la respuesta al cliente obligatoriamente mediante `context.result(resultado)`.
+
+### C. Ensamblaje en el Main (Composition Root)
+- La clase `Main` es el **único** lugar autorizado para hacer `Javalin.create().start(...)`.
+- **Enrutamiento dinámico:** La instanciación del `EndPoint` y la inyección del `Context` se realiza dentro de la definición de la ruta HTTP. Ejemplo estricto a seguir:
+  ```java
+  app.get("/api/recurso", context -> {
+      new RecursoEndPoint(miCasoDeUso, context).execute();
+  });
   ```
