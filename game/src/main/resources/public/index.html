@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Software — ULPGC</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="container">
+        <header>
+            <h1>Chess Software</h1>
+            <p class="subtitle">Frontend Ligero — Arquitectura Hexagonal</p>
+        </header>
+
+        <section class="game-panel">
+            <div id="board" class="board"></div>
+
+            <aside class="controls">
+                <div class="status-card">
+                    <h2>Estado del Juego</h2>
+                    <p id="turn-indicator">Selecciona una pieza para mover</p>
+                    <div class="fen-box">
+                        <label for="fen-display">FEN Actual:</label>
+                        <input type="text" id="fen-display" readonly>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button id="reset-btn" class="btn primary">Reiniciar Tablero</button>
+                </div>
+            </aside>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
