@@ -1,83 +1,108 @@
-# Arquitectura Hexagonal y Flujo del Backend — Chess Software
+# Arquitectura y Flujos del Sistema — Chess Software
 
-Este documento describe la arquitectura en capas adoptada en el proyecto de ajedrez (ULPGC), garantizando el desacoplamiento absoluto de las reglas del juego frente a frameworks web, notaciones y persistencia externa.
+Este documento describe de forma visual e inmediata cómo fluyen las acciones en el sistema, separando cada ciclo en su propio diagrama para que sea rápido y fácil de entender.
 
 ---
 
-## 1. Diagrama de Capas (Ports & Adapters)
+## 1. Flujo 1: Carga y Renderizado del Tablero Inicial
+
+Muestra cómo el navegador solicita el estado inicial del ajedrez y el backend lo construye desde el dominio puro.
 
 ```text
-┌────────────────────────────────────────────────────────────────────────┐
-│                        INFRASTRUCTURE LAYER                            │
-│  ┌───────────────────────┐  ┌─────────────────┐  ┌──────────────────┐  │
-│  │ Javalin Web Endpoints │  │   Adapters FEN  │  │   Adapters UCI   │  │
-│  │ (/initial, /move)     │  │ (Board, State)  │  │  (Move Serial.)  │  │
-│  └───────────┬───────────┘  └────────┬────────┘  └────────┬─────────┘  │
-│              │                       │                    │            │
-│              ▼                       │                    │            │
-│  ┌───────────────────────────────────┴────────────────────┴─────────┐  │
-│  │                    APPLICATION LAYER                             │  │
-│  │   - Casos de Uso: GetInitialBoardUseCase, MovePieceUseCase        │  │
-│  │   - Puertos Entrada: BoardDeserializer, MoveDeserializer         │  │
-│  │   - Puertos Salida: BoardSerializer, MoveSerializer              │  │
-│  └───────────────────────────────────┬──────────────────────────────┘  │
-│                                      │                                 │
-│                                      ▼                                 │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │                       DOMAIN LAYER (Core)                        │  │
-│  │   - Entidades inmutables: Board, Move, Square, State             │  │
-│  │   - Enumerados: Piece, Color, File, Rank                         │  │
-│  │   - Cero dependencias externas (Java Puro)                       │  │
-│  └──────────────────────────────────────────────────────────────────┘  │
-└────────────────────────────────────────────────────────────────────────┘
+[ Pantalla del Tablero (Navegador: http://localhost:7070) ]
+       │
+       ▼ (Al cargar la página: window.DOMContentLoaded)
+[ ChessGameClient.fetchInitialBoard() ]
+       │
+       ▼ (fetch GET /api/board/initial)
+[ Javalin Router (Main: puerto 7070) ]
+       │
+       ▼
+[ GetInitialBoardEndPoint.execute() ]
+       │
+       ▼ (Llamada limpia sin parámetros)
+[ GetInitialBoardUseCase.execute() ]
+       │
+       ├──> [ Board.initial() ] ──────────> Construye piezas en posición inicial (Dominio)
+       │
+       ▼ (Pasa el Board al puerto)
+[ FenBoardSerializer.serialize(board) ] ──> Genera "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
+       │
+       ▼
+[ context.result(fen) ] ──────────────────> Respuesta HTTP 200 (text/plain)
+       │
+       ▼
+[ app.js: parseFenToMatrix() ] ───────────> Genera matriz 8x8 y dibuja piezas ♔ ♕ ♖ en el DOM
 ```
 
 ---
 
-## 2. Esquema de Ejecución de una Petición HTTP
+## 2. Flujo 2: Ejecución de un Movimiento de Pieza
+
+Muestra el ciclo completo desde que el usuario hace clic en dos casillas hasta que el backend valida y devuelve el nuevo estado.
 
 ```text
-[ Cliente Web / Navegador (fetch /api/board/move) ]
+[ Interacción del Usuario en el Tablero ]
+       │
+       ├─ Clic 1: Casilla origen (ej: 'e2' con peón ♙) ──> Resalta casilla seleccionada
+       └─ Clic 2: Casilla destino (ej: 'e4')          ──> Forma movimiento UCI: "e2e4"
        │
        ▼
-[ Javalin Handler (Main) ]
+[ ChessGameClient.makeMove("e2", "e4") ]
        │
-       ▼ (Inyección de Context)
-[ MovePieceEndPoint.execute() ] ──> Extrae queryParams: board (FEN) y move (UCI)
-       │
-       ▼ (Instancia MovePieceUseCase.Input)
-[ MovePieceUseCase.execute(input) ]
-       │
-       ├──> [ BoardDeserializer (FEN) ] ──> Genera Board (Dominio)
-       ├──> [ MoveDeserializer (UCI) ]  ──> Genera Move (Dominio)
+       ▼ (fetch GET /api/board/move?board={fen}&move=e2e4)
+[ Javalin Router (Main: puerto 7070) ]
        │
        ▼
-[ Board.move(move) ] ──> Produce un nuevo Board inmutable con la pieza desplazada
+[ MovePieceEndPoint.execute() ]
+       │
+       ├──> Extrae queryParam("board")  (String FEN)
+       ├──> Extrae queryParam("move")   (String UCI)
+       │
+       ▼ (Encapsula en Command inmutable)
+[ MovePieceUseCase.Input(board, move) ]
        │
        ▼
-[ BoardSerializer (FEN) ] ──> Transforma el nuevo Board a String FEN
+[ MovePieceUseCase.execute(input) ] ── (Tubería de transformación limpia: process)
+       │
+       ├──> [ FenBoardDeserializer ] ──> Convierte FEN a Board (Dominio)
+       ├──> [ UciMoveDeserializer ]  ──> Convierte "e2e4" a Move (from: e2, to: e4)
        │
        ▼
-[ context.result(newFen) ] ──> Respuesta HTTP 200 OK enviada al navegador
+[ Board.move(move) ] ──────────────────> Produce un nuevo Board inmutable con la pieza desplazada
+       │
+       ▼
+[ FenBoardSerializer.serialize(newBoard) ] ──> Convierte a "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR"
+       │
+       ▼
+[ context.result(newFen) ] ────────────> Respuesta HTTP 200 con el nuevo FEN
+       │
+       ▼
+[ app.js: actualiza currentFen ] ──────> Re-renderiza el tablero: el peón blanco aparece en e4
 ```
 
 ---
 
-## 3. Responsabilidades por Capa
+## 3. Mapa de Componentes: ¿Dónde vive cada pieza?
 
-| Capa | Responsabilidad | Restricciones estrictas |
-| --- | --- | --- |
-| **Domain (`application.domain.model`)** | Entidades inmutables, geometría del tablero y representación pura del ajedrez. | Java puro estándar (`record`, `enum`, `class final`). Prohibidas librerías externas o formatos de transporte. |
-| **Ports (`application.ports`)** | Contratos de interfaz segregados (ISP). Entrada (`deserializer`) y Salida (`serializer`). | Interfaces limpias con tipos del dominio o primitivos. Nunca acoplar a librerías concretas. |
-| **UseCases (`application.usecases`)** | Orquestadores de la lógica de negocio. Directores de orquesta del sistema. | Solo dependen de Puertos y Dominio. No conocen HTTP ni Javalin. |
-| **Adapters (`infrastructure.adapters`)** | Traductores de entrada/salida: notaciones FEN, UCI, algebraica y Endpoints web. | Implementan los puertos y adaptan el exterior hacia el Core. |
-| **Composition Root (`Main.java`)** | Cableado de dependencias (Pure DI) y arranque del servidor Javalin. | Único lugar donde se instancian y enlazan las implementaciones concretas. |
+Para ubicar cualquier archivo en 2 segundos según la Arquitectura Hexagonal:
 
----
-
-## 4. Patrones de Diseño Aplicados
-
-1. **Ports & Adapters (Arquitectura Hexagonal):** Desacopla completamente el núcleo de ajedrez de Javalin y de los formatos externos de intercambio.
-2. **Pure Dependency Injection (Inversión de Control por Constructor):** Ninguna clase de negocio ni adaptador crea sus dependencias con `new`; todo colaborador se inyecta por constructor.
-3. **Pipeline / Method Chaining en Casos de Uso:** Descomposición paso a paso mediante métodos privados en cascada (`process(...)`), garantizando claridad y trazabilidad de cada fase.
-4. **Command / Request Object (`record Input`):** Agrupa los parámetros de entrada del caso de uso de forma inmutable y fuertemente tipada.
+```text
+game/src/main/java/software/ulpgc/chess/
+│
+├── application/                         <-- EL CORE (Negocio puro, no sabe qué es Javalin ni HTML)
+│   ├── domain/model/                    <-- Entidades inmutables: Board, Move, Square, State, Piece, Color...
+│   ├── ports/                           <-- Contratos de interfaz (ISP):
+│   │   ├── serializer/                  <-- Salida: BoardSerializer, MoveSerializer...
+│   │   └── deserializer/                <-- Entrada: BoardDeserializer, MoveDeserializer...
+│   └── usecases/                        <-- Acciones del sistema: GetInitialBoardUseCase, MovePieceUseCase
+│
+├── infrastructure/                      <-- EL EXTERIOR (Traducción y librerías)
+│   └── adapters/                        <-- Implementaciones concretas:
+│       ├── algebraic/                   <-- Notación de casillas 'e4' (AlgebraicPosition...)
+│       ├── fen/                         <-- Notación FEN (FenBoardSerializer/Deserializer...)
+│       ├── uci/                         <-- Notación UCI 'e2e4' (UciMoveSerializer/Deserializer)
+│       └── endpoints/                   <-- Adaptadores Web Javalin (GetInitialBoardEndPoint, MovePieceEndPoint)
+│
+└── Main.java                            <-- COMPOSITION ROOT (Une todo con Pure DI y arranca el servidor)
+```
