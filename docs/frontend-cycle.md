@@ -1,54 +1,44 @@
-# Arquitectura del Frontend y Comunicación Web — Chess Software
+# Ciclo de Vida del Frontend — Chess Software
 
-Este documento describe la arquitectura técnica del cliente web ligero y su ciclo de vida con el servidor Javalin.
+Este documento describe de forma simple y visual cómo el cliente web interactúa con el backend.
 
 ---
 
-## 1. Diagrama de Secuencia: Ciclo de Vida del Frontend
+## 1. Esquema Simple del Ciclo Web
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Usuario
-    participant UI as Navegador Web (DOM)
-    participant Client as ChessGameClient (app.js)
-    participant Server as Servidor Javalin (Puerto 7070)
-    participant Core as Backend Hexagonal
-
-    Usuario->>UI: Accede a http://localhost:7070
-    Server-->>UI: Sirve index.html, style.css y app.js
-    Client->>Server: fetch('/api/board/initial')
-    Server->>Core: GetInitialBoardUseCase.execute()
-    Core-->>Server: Retorna FEN inicial
-    Server-->>Client: FEN String (HTTP 200)
-    Client->>UI: Renderiza cuadrícula 8x8 con piezas Unicode
-
-    Usuario->>UI: Clic en 'e2' (selección origen)
-    UI->>Client: onSquareClicked('e2', 'P')
-    Client->>UI: Resalta casilla seleccionada
-
-    Usuario->>UI: Clic en 'e4' (destino)
-    UI->>Client: onSquareClicked('e4', null)
-    Client->>Server: fetch('/api/board/move?board={fen}&move=e2e4')
-    Server->>Core: MovePieceUseCase.execute(Input)
-    Core-->>Server: Retorna nuevo FEN con peón en e4
-    Server-->>Client: FEN String actualizado (HTTP 200)
-    Client->>UI: Re-renderiza tablero con la pieza desplazada
+```text
+[ Usuario ] ── Clic en el navegador (http://localhost:7070)
+    │
+    ├─> Al entrar a la web:
+    │   [ app.js ] ── GET /api/board/initial ──> [ Backend ] ──> Devuelve FEN inicial
+    │       │
+    │       └─> Pinta el tablero con las piezas iniciales ♔ ♕ ♖
+    │
+    └─> Al mover una pieza (ej: 'e2' a 'e4'):
+        [ Clic 1: Casilla 'e2' ] ──> Resalta la pieza
+        [ Clic 2: Casilla 'e4' ] ──> Forma la jugada "e2e4"
+            │
+            ▼
+        [ app.js ] ── GET /api/board/move?board={fen}&move=e2e4 ──> [ Backend ]
+            │                                                              │
+            │                                                              ▼
+            │                                              Calcula nuevo tablero
+            │                                                              │
+            ▼                                                              ▼
+        [ app.js ] <─────────────────── Devuelve nuevo FEN <───────────────┘
+            │
+            ▼
+        Mueve el peón a 'e4' en la pantalla
 ```
 
 ---
 
-## 2. Componentes del Cliente Web
+## 2. Componentes Básicos (`game/src/main/resources/public/`)
 
-Ubicados en `game/src/main/resources/public/`:
-
-1. **`index.html`:**
-   - Estructura semántica sin frameworks.
-   - Contenedor del tablero `#board` y panel lateral `#controls` con estado y campo FEN en tiempo real.
-2. **`style.css`:**
-   - Grid CSS puro de $8 \times 64\text{px}$ para el tablero.
-   - Colores clásicos de madera para casillas (`#f0d9b5` / `#b58863`) y resaltado de selección.
-3. **`app.js` (`ChessGameClient`):**
-   - **Parser FEN:** `parseFenToMatrix(fen)` convierte la notación FEN en una matriz de $8 \times 8$.
-   - **Mapeador Unicode:** Traduce identificadores de pieza (`K, Q, R, B, N, P, k, q, r...`) a glifos tipográficos oficiales de ajedrez (♔, ♕, ♖, ♗, ♘, ♙...).
-   - **Rutas Relativas:** Utiliza URLs relativas (`/api/board/...`) para garantizar portabilidad inmediata a cualquier dominio o entorno sin tocar código.
+* **`index.html`:** La estructura de la página (el tablero y el indicador de turno).
+* **`style.css`:** El diseño visual (colores de las casillas y tamaño).
+* **`app.js`:** 
+  1. Pide el tablero inicial al servidor (`fetch('/api/board/initial')`).
+  2. Detecta los dos clics del ratón (origen y destino).
+  3. Le pide al servidor mover la pieza (`fetch('/api/board/move?board=...&move=...')`).
+  4. Actualiza la pantalla con la respuesta.
