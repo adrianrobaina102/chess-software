@@ -5,6 +5,8 @@ Proyecto de la asignatura Ingeniería del Software 2 (ULPGC). Sistema de salas d
 ## 1. Objetivo de la entrega
 El propósito de este proyecto es desarrollar un sistema que permita crear salas de ajedrez, conectar usuarios para disputar o reproducir partidas y registrar el historial de las mismas. El diseño prioriza el desacoplamiento entre la lógica de negocio, la interfaz de usuario, las comunicaciones de red y la persistencia de datos mediante el patrón de Puertos y Adaptadores (Arquitectura Hexagonal).
 
+> Para una explicación gráfica paso a paso de los flujos de ejecución, consulta los diagramas en [`docs/architecture.md`](docs/architecture.md) y [`docs/frontend-cycle.md`](docs/frontend-cycle.md).
+
 ## 2. Dependencias y entorno de desarrollo
 <!-- NOTA: Si añades librerías en el pom.xml (ej. SparkJava, Javalin, Jackson, Gson, SQLite...), añádelas a esta lista -->
 * **JDK:** Oracle OpenJDK 27.
@@ -29,14 +31,15 @@ cd game
 mvn clean test
 ```
 
-### Ejecución del Servidor Backend
+### Ejecución del Servidor Backend y Aplicación Web
 Para arrancar el servidor web de ajedrez con Javalin:
 
 1. Ejecutar la clase principal `software.ulpgc.chess.Main` (desde IntelliJ o mediante Maven).
 2. El servidor arrancará por defecto en el puerto `7070`.
-3. Endpoints disponibles:
-   * **Obtener tablero inicial:** `GET http://localhost:7070/api/board/initial`
-   * **Aplicar un movimiento:** `GET http://localhost:7070/api/board/move?board=<FEN>&move=<UCI>`
+3. Puntos de acceso:
+   * **Aplicación Web interactiva:** Abrir en el navegador [`http://localhost:7070`](http://localhost:7070)
+   * **API - Obtener tablero inicial:** `GET http://localhost:7070/api/board/initial`
+   * **API - Aplicar un movimiento:** `GET http://localhost:7070/api/board/move?board=<FEN>&move=<UCI>`
      * Ejemplo: `http://localhost:7070/api/board/move?board=rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR&move=e2e4`
 
 ## 4. Estructura del proyecto
@@ -44,34 +47,44 @@ Para arrancar el servidor web de ajedrez con Javalin:
 El proyecto se organiza en módulos autónomos e independientes. El módulo `game` refleja una separación estricta de responsabilidades bajo arquitectura hexagonal:
 
 ```text
-game/
-├── pom.xml                                     # Descriptor de construcción del módulo
-└── src/
-    ├── main/java/software/ulpgc/chess/
-    │   ├── application/                        # El Core (Puro, sin dependencias externas)
-    │   │   ├── domain/model/                   # Entidades y objetos de valor inmutables
-    │   │   ├── ports/                          # Interfaces de entrada y salida
-    │   │   │   ├── serializer/                 # Puertos de salida (escritura)
-    │   │   │   └── deserializer/               # Puertos de entrada (lectura)
-    │   │   └── usecases/                       # Casos de uso (orquestadores de negocio)
-    │   │       ├── UseCases.java               # Interfaz funcional base
-    │   │       ├── GetInitialBoardUseCase.java # Caso de uso: Tablero inicial
-    │   │       └── MovePieceUseCase.java       # Caso de uso: Mover pieza
-    │   ├── infrastructure/                     # El Exterior (Traducción y comunicación)
-    │   │   └── adapters/                       # Implementaciones concretas
-    │   │       ├── algebraic/                  # Notación algebraica (casillas)
-    │   │       ├── fen/                        # Notación FEN (tablero y estado)
-    │   │       ├── uci/                        # Protocolo UCI (movimientos)
-    │   │       └── endpoints/                  # Adaptadores de entrada Web (Javalin)
-    │   │           ├── EndPoint.java           # Interfaz base de endpoints
-    │   │           ├── GetInitialBoardEndPoint.java
-    │   │           └── MovePieceEndPoint.java
-    │   └── Main.java                           # Composition Root / cableado y servidor
-    └── test/java/tests/                        # Pruebas unitarias automatizadas
-        ├── algebraic/                          # Tests de adaptadores algebraicos
-        ├── fen/                                # Tests de adaptadores FEN
-        ├── uci/                                # Tests de adaptadores UCI
-        └── usecases/                           # Tests unitarios de casos de uso
+chess-software/
+├── docs/                                       # Documentación técnica, reglas y diagramas
+│   ├── agent.md                                # Reglas del agente, convención de nombres y estilo
+│   ├── architecture.md                         # Diagramas de flujo y arquitectura hexagonal
+│   └── frontend-cycle.md                       # Diagrama de secuencia del cliente web
+├── game/
+│   ├── pom.xml                                 # Descriptor de construcción del módulo
+│   └── src/
+│       ├── main/
+│       │   ├── java/software/ulpgc/chess/
+│       │   │   ├── application/                # El Core (Puro, sin dependencias externas)
+│       │   │   │   ├── domain/model/           # Entidades y objetos de valor inmutables
+│       │   │   │   ├── ports/                  # Interfaces de entrada y salida
+│       │   │   │   │   ├── serializer/         # Puertos de salida (escritura)
+│       │   │   │   │   └── deserializer/       # Puertos de entrada (lectura)
+│       │   │   │   └── usecases/               # Casos de uso (orquestadores de negocio)
+│       │   │   │       ├── UseCases.java       # Interfaz funcional base
+│       │   │   │       ├── GetInitialBoardUseCase.java
+│       │   │   │       └── MovePieceUseCase.java
+│       │   │   ├── infrastructure/             # El Exterior (Traducción y comunicación)
+│       │   │   │   └── adapters/               # Implementaciones concretas
+│       │   │   │       ├── algebraic/          # Notación algebraica (casillas)
+│       │   │   │       ├── fen/                # Notación FEN (tablero y estado)
+│       │   │   │       ├── uci/                # Protocolo UCI (movimientos)
+│       │   │   │       └── endpoints/          # Adaptadores de entrada Web (Javalin)
+│       │   │   │           ├── EndPoint.java
+│       │   │   │           ├── GetInitialBoardEndPoint.java
+│       │   │   │           └── MovePieceEndPoint.java
+│       │   │   └── Main.java                   # Composition Root / cableado y servidor
+│       │   └── resources/public/               # Frontend web estático servido por Javalin
+│       │       ├── index.html                  # Estructura del tablero y controles
+│       │       ├── style.css                   # Estilos y cuadrícula de casillas
+│       │       └── app.js                      # Cliente de ajedrez (interacción y fetch)
+│       └── test/java/tests/                    # Pruebas unitarias automatizadas
+│           ├── algebraic/                      # Tests de adaptadores algebraicos
+│           ├── fen/                            # Tests de adaptadores FEN
+│           ├── uci/                            # Tests de adaptadores UCI
+│           └── usecases/                       # Tests unitarios de casos de uso
 ```
 
 ## 5. Arquitectura de sistemas
@@ -81,6 +94,7 @@ game/
 El backend expone su funcionalidad a través de una API HTTP implementada con Javalin bajo el patrón Inversión de Dependencias (Pure DI):
 
 * **Contrato de comunicación HTTP:**
+  * `GET /`: Entrega la aplicación SPA web (`index.html`, `style.css`, `app.js`).
   * `GET /api/board/initial`: Devuelve el estado inicial del tablero en formato FEN (`text/plain`).
   * `GET /api/board/move?board={fen}&move={uci}`: Recibe el FEN actual y el movimiento en UCI por parámetros de consulta (`query params`), delega en el caso de uso y responde con el nuevo FEN resultante.
 
@@ -98,7 +112,7 @@ Contiene las estructuras de datos inmutables y la representación lógica del aj
 ### Casos de Uso (`software.ulpgc.chess.application.usecases`)
 Orquestan la lógica pura apoyándose en los puertos y el dominio, totalmente aislados de la web:
 * `GetInitialBoardUseCase`: Consulta el tablero inicial en el dominio y lo serializa a texto.
-* `MovePieceUseCase`: Recibe un `Input(board, move)`, deserializa ambos elementos mediante los puertos correspondientes, ejecuta `Board.move(move)` y serializa el tablero resultante.
+* `MovePieceUseCase`: Recibe un `Input(board, move)`, deserializa ambos elementos mediante los puertos correspondientes, ejecuta `Board.move(move)` y serializa el tablero resultante mediante una tubería de métodos privados `process(...)`.
 
 ### Puertos (`software.ulpgc.chess.application.ports`)
 <!-- NOTA: Cuando crees puertos para guardar partidas en base de datos (ej. GameRepository) o gestionar salas, añádelos a esta lista -->
@@ -121,14 +135,16 @@ Implementaciones concretas de los puertos organizadas por tecnología o formato:
 * **Notación Algebraica (`adapters.algebraic`):** `AlgebraicPositionSerializer` y `AlgebraicPositionDeserializer` para coordenadas individuales (ej. `"e4"`).
 * **Notación FEN (`adapters.fen`):** `FenBoardSerializer`, `FenBoardDeserializer` y `FenStateDeserializer` para representar el tablero y el estado de la partida en cadenas compactas.
 * **Protocolo UCI (`adapters.uci`):** `UciMoveSerializer` y `UciMoveDeserializer` para representar movimientos en formato origen-destino (ej. `"e2e4"`), delegando la resolución de coordenadas en los adaptadores algebraicos.
-* **Adaptadores de entrada Web (`adapters.endpoints`):** Clases que traducen las peticiones Javalin (`Context`) hacia llamadas a los casos de uso (`GetInitialBoardEndPoint`, `MovePieceEndPoint`).
+* **Adaptadores de entrada Web (`adapters.endpoints`):** Clases que implementan `EndPoint` y traducen las peticiones Javalin (`Context`) hacia llamadas a los casos de uso (`GetInitialBoardEndPoint`, `MovePieceEndPoint`).
 
 ## 7. Arquitectura hexagonal ligera del Frontend
 <!-- NOTA: Documenta aquí las clases/módulos del frontend:
      - Vista / UI del tablero (adaptador de entrada).
      - Casos de uso de interacción del usuario.
      - Puerto de servicio y su adaptador de red (HTTP/WebSocket) para hablar con el backend. -->
-*(Pendiente de documentar: organización de vistas, casos de uso de interacción, puertos de servicio y adaptadores de comunicación).*
+El frontend está implementado como una aplicación web ligera (Single Page Application sin dependencias externas) alojada en `game/src/main/resources/public/`:
+* **Vista (`index.html` y `style.css`):** Renderiza el tablero de ajedrez en una cuadrícula CSS 8x8 con glifos tipográficos Unicode oficiales (♔, ♕, ♖, ♗, ♘, ♙...), junto a controles de reinicio e indicador de estado/FEN.
+* **Controlador (`app.js` - `ChessGameClient`):** Gestiona los clics del usuario en las casillas (origen y destino), compone la jugada en formato UCI (ej. `e2e4`) y se comunica mediante llamadas asíncronas (`fetch`) con los endpoints del backend (`/api/board/initial` y `/api/board/move`).
 
 ## 8. Modelo de datos y conexión de usuarios
 <!-- NOTA: Explica aquí:
