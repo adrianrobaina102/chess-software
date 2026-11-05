@@ -119,3 +119,44 @@ El sistema expone su lógica de negocio al exterior mediante una API HTTP utiliz
       new RecursoEndPoint(miCasoDeUso, context).execute();
   });
   ```
+
+---
+
+## 6. Gestión de Ramas y Versiones con Git Tags (GitFlow)
+
+El repositorio sigue un modelo estricto de **GitFlow** y versionado semántico formal (`vX.Y.Z`) mediante **Git Tags**:
+
+### A. Estrategia de Ramas
+- **`develop`:** Rama activa para el desarrollo cotidiano, iteraciones de código, nuevos casos de uso, adaptadores y refactorizaciones continuas. Todo el trabajo diario se realiza aquí mediante commits atómicos y descriptivos.
+- **`master`:** Rama de producción y estabilidad máxima, reservada exclusivamente para versiones estables listas para entrega académica. Solo recibe merges procedentes de `develop` cuando un gran hito ha sido completado y verificado.
+
+### B. Criterios para un "Gran Paso" (Creación de un nuevo Tag mayor, ej. `v4.0.0`)
+Se creará un nuevo Git Tag formal únicamente cuando se alcance un hito de gran impacto que cumpla al menos uno de los siguientes criterios:
+1. **Nuevo subsistema funcional completo:** Incorporación de capacidades avanzadas de negocio (ej. motor de IA / Minimax, sistema de salas y emparejamiento, persistencia de partidas en PGN / base de datos, o reloj de ajedrez).
+2. **Reestructuración arquitectónica mayor:** Cambios estructurales profundos completados con éxito (ej. migración a multi-módulo Maven autónomo, separación cliente-servidor o refactorización integral de capas).
+3. **Integración End-to-End verificada:** Verificación completa del flujo extremo a extremo (Frontend $\leftrightarrow$ Javalin $\leftrightarrow$ Casos de Uso $\leftrightarrow$ Dominio) con la totalidad de los tests unitarios y de integración pasando en verde.
+
+### C. Procedimiento para Taggear y Publicar
+1. Realizar merge de `develop` hacia `master`:
+   ```bash
+   git checkout master
+   git merge develop
+   ```
+2. Crear el tag anotado semántico con su descripción:
+   ```bash
+   git tag -a vX.0.0 -m "Release vX.0.0: <Descripción del hito>"
+   ```
+3. Publicar ramas y tags en el repositorio remoto:
+   ```bash
+   git push origin master
+   git push origin --tags
+   ```
+4. Regresar a `develop` para continuar el desarrollo:
+   ```bash
+   git checkout develop
+   ```
+
+### D. Historial de Tags y Grandes Hitos del Proyecto
+- **`v1.0.0` (Core de Dominio del Ajedrez):** Implementación completa del modelo de dominio inmutable (`Board`, `Square`, `Move`, `Piece`, `Color`, `File`, `Rank`), representación geométrica del tablero, disposición inicial y primeros deserializadores algebraicos y FEN.
+- **`v2.0.0` (Arquitectura Hexagonal, Serializadores FEN/UCI y Casos de Uso):** Modularización en `game`, segregación de puertos (`serializer` y `deserializer`), adaptadores organizados por formato (`algebraic`, `fen`, `uci`), creación de los primeros casos de uso (`GetInitialBoardUseCase`, `MovePieceUseCase`) y primeras rutas HTTP en Javalin.
+- **`v3.0.0` (Frontend Web Ligero, Javalin Endpoints y Suite de Tests):** Integración del cliente web interactivo (HTML/CSS/JS con piezas Unicode) servido estáticamente por Javalin, adaptadores `EndPoint` para comunicación web, suite completa de 28 pruebas unitarias automatizadas (`BUILD SUCCESS`) y documentación técnica en `docs/`.
