@@ -10,12 +10,12 @@ Actúa como un compañero de equipo experto en Ingeniería del Software en Java 
 
 ## 2. Arquitectura Modular y Estructura de Paquetes
 
-El proyecto se organiza en **módulos independientes** (cada uno con su propio `pom.xml` autónomo: `game`, y futuros módulos como `user`, `room`, etc.).
+El proyecto se organiza con una clara separación entre **`backend`** (que contiene los módulos del servidor como `game`, y futuros módulos como `user`, `room`, etc., cada uno con su propio `pom.xml` autónomo) y **`frontend`** (reservado para clientes visuales o interfaces desacopladas).
 
-Dentro de cada módulo (ej. `game`), el sistema sigue **Arquitectura Hexagonal (Ports & Adapters)** estricta, dividiéndose en dos grandes bloques aislados entre sí:
+Dentro de cada módulo del backend (ej. `backend/game`), el sistema sigue **Arquitectura Hexagonal (Ports & Adapters)** estricta, dividiéndose en dos grandes bloques aislados entre sí:
 
 ```text
-game/src/main/java/software/ulpgc/chess/
+backend/game/src/main/java/software/ulpgc/chess/
 │
 ├── application/                         <-- Core (Reglas del juego, puro e inmutable)
 │   ├── domain/model/                    <-- Entidades y objetos de valor
@@ -58,7 +58,7 @@ game/src/main/java/software/ulpgc/chess/
 
 Y en el bloque de pruebas:
 ```text
-game/src/test/java/tests/
+backend/game/src/test/java/tests/
 ├── algebraic/                           <-- Tests de adaptadores algebraicos
 ├── fen/                                 <-- Tests de adaptadores FEN
 └── uci/                                 <-- Tests de adaptadores UCI

@@ -10,7 +10,7 @@ El propósito de este proyecto es desarrollar un sistema que permita crear salas
 ## 2. Dependencias y entorno de desarrollo
 <!-- NOTA: Si añades librerías en el pom.xml (ej. SparkJava, Javalin, Jackson, Gson, SQLite...), añádelas a esta lista -->
 * **JDK:** Oracle OpenJDK 27.
-* **Gestor de construcción:** Apache Maven (`pom.xml` autónomo por módulo).
+* **Gestor de construcción:** Apache Maven (`pom.xml` autónomo por módulo en `backend/`).
 * **Dependencias actuales:**
   * `JUnit 5 (Jupiter 6.1.3)`: Para la ejecución de pruebas unitarias automatizadas (`scope: test`).
   * `AssertJ Core (3.27.7)`: Librería de aserciones fluidas para las pruebas unitarias (`scope: test`).
@@ -20,14 +20,14 @@ El propósito de este proyecto es desarrollar un sistema que permita crear salas
 ## 3. Compilación y ejecución
 
 ### Compilación del núcleo y ejecución de pruebas
-El núcleo de la lógica del ajedrez se encuentra aislado en el módulo `game`. Para compilar y ejecutar las pruebas:
+El núcleo de la lógica del ajedrez se encuentra aislado en el módulo `backend/game`. Para compilar y ejecutar las pruebas:
 
 ```bash
 # Opción 1: Desde la raíz del repositorio indicando el POM del módulo
-mvn -f game/pom.xml clean test
+mvn -f backend/game/pom.xml clean test
 
 # Opción 2: Entrando al directorio del módulo
-cd game
+cd backend/game
 mvn clean test
 ```
 
@@ -44,7 +44,7 @@ Para arrancar el servidor web de ajedrez con Javalin:
 
 ## 4. Estructura del proyecto
 <!-- NOTA: Actualiza este árbol si creas nuevos paquetes (ej. application / usecases, persistence, ui, network...) -->
-El proyecto se organiza en módulos autónomos e independientes. El módulo `game` refleja una separación estricta de responsabilidades bajo arquitectura hexagonal:
+El proyecto se organiza en dos grandes áreas: `backend/` (con módulos autónomos) y `frontend/` (para artefactos de cliente):
 
 ```text
 chess-software/
@@ -52,39 +52,41 @@ chess-software/
 │   ├── agent.md                                # Reglas del agente, convención de nombres y estilo
 │   ├── architecture.md                         # Diagramas de flujo y arquitectura hexagonal
 │   └── frontend-cycle.md                       # Diagrama de secuencia del cliente web
-├── game/
-│   ├── pom.xml                                 # Descriptor de construcción del módulo
-│   └── src/
-│       ├── main/
-│       │   ├── java/software/ulpgc/chess/
-│       │   │   ├── application/                # El Core (Puro, sin dependencias externas)
-│       │   │   │   ├── domain/model/           # Entidades y objetos de valor inmutables
-│       │   │   │   ├── ports/                  # Interfaces de entrada y salida
-│       │   │   │   │   ├── serializer/         # Puertos de salida (escritura)
-│       │   │   │   │   └── deserializer/       # Puertos de entrada (lectura)
-│       │   │   │   └── usecases/               # Casos de uso (orquestadores de negocio)
-│       │   │   │       ├── UseCases.java       # Interfaz funcional base
-│       │   │   │       ├── GetInitialBoardUseCase.java
-│       │   │   │       └── MovePieceUseCase.java
-│       │   │   ├── infrastructure/             # El Exterior (Traducción y comunicación)
-│       │   │   │   └── adapters/               # Implementaciones concretas
-│       │   │   │       ├── algebraic/          # Notación algebraica (casillas)
-│       │   │   │       ├── fen/                # Notación FEN (tablero y estado)
-│       │   │   │       ├── uci/                # Protocolo UCI (movimientos)
-│       │   │   │       └── endpoints/          # Adaptadores de entrada Web (Javalin)
-│       │   │   │           ├── EndPoint.java
-│       │   │   │           ├── GetInitialBoardEndPoint.java
-│       │   │   │           └── MovePieceEndPoint.java
-│       │   │   └── Main.java                   # Composition Root / cableado y servidor
-│       │   └── resources/public/               # Frontend web estático servido por Javalin
-│       │       ├── index.html                  # Estructura del tablero y controles
-│       │       ├── style.css                   # Estilos y cuadrícula de casillas
-│       │       └── app.js                      # Cliente de ajedrez (interacción y fetch)
-│       └── test/java/tests/                    # Pruebas unitarias automatizadas
-│           ├── algebraic/                      # Tests de adaptadores algebraicos
-│           ├── fen/                            # Tests de adaptadores FEN
-│           ├── uci/                            # Tests de adaptadores UCI
-│           └── usecases/                       # Tests unitarios de casos de uso
+├── frontend/                                   # Directorio para clientes desacoplados / interfaz
+└── backend/                                    # Módulos y servicios del servidor
+    └── game/                                   # Módulo del núcleo y reglas de juego
+        ├── pom.xml                             # Descriptor de construcción del módulo
+        └── src/
+            ├── main/
+            │   ├── java/software/ulpgc/chess/
+            │   │   ├── application/            # El Core (Puro, sin dependencias externas)
+            │   │   │   ├── domain/model/       # Entidades y objetos de valor inmutables
+            │   │   │   ├── ports/              # Interfaces de entrada y salida
+            │   │   │   │   ├── serializer/     # Puertos de salida (escritura)
+            │   │   │   │   └── deserializer/   # Puertos de entrada (lectura)
+            │   │   │   └── usecases/           # Casos de uso (orquestadores de negocio)
+            │   │   │       ├── UseCases.java
+            │   │   │       ├── GetInitialBoardUseCase.java
+            │   │   │       └── MovePieceUseCase.java
+            │   │   ├── infrastructure/         # El Exterior (Traducción y comunicación)
+            │   │   │   └── adapters/           # Implementaciones concretas
+            │   │   │       ├── algebraic/      # Notación algebraica (casillas)
+            │   │   │       ├── fen/            # Notación FEN (tablero y estado)
+            │   │   │       ├── uci/            # Protocolo UCI (movimientos)
+            │   │   │       └── endpoints/      # Adaptadores de entrada Web (Javalin)
+            │   │   │           ├── EndPoint.java
+            │   │   │           ├── GetInitialBoardEndPoint.java
+            │   │   │           └── MovePieceEndPoint.java
+            │   │   └── Main.java               # Composition Root / cableado y servidor
+            │   └── resources/public/           # Frontend web estático servido por Javalin
+            │       ├── index.html              # Estructura del tablero y controles
+            │       ├── style.css               # Estilos y cuadrícula de casillas
+            │       └── app.js                  # Cliente de ajedrez (interacción y fetch)
+            └── test/java/tests/                # Pruebas unitarias automatizadas
+                ├── algebraic/                  # Tests de adaptadores algebraicos
+                ├── fen/                        # Tests de adaptadores FEN
+                ├── uci/                        # Tests de adaptadores UCI
+                └── usecases/                   # Tests unitarios de casos de uso
 ```
 
 ## 5. Arquitectura de sistemas
@@ -142,7 +144,7 @@ Implementaciones concretas de los puertos organizadas por tecnología o formato:
      - Vista / UI del tablero (adaptador de entrada).
      - Casos de uso de interacción del usuario.
      - Puerto de servicio y su adaptador de red (HTTP/WebSocket) para hablar con el backend. -->
-El frontend está implementado como una aplicación web ligera (Single Page Application sin dependencias externas) alojada en `game/src/main/resources/public/`:
+El frontend está implementado como una aplicación web ligera (Single Page Application sin dependencias externas) alojada en `backend/game/src/main/resources/public/`:
 * **Vista (`index.html` y `style.css`):** Renderiza el tablero de ajedrez en una cuadrícula CSS 8x8 con glifos tipográficos Unicode oficiales (♔, ♕, ♖, ♗, ♘, ♙...), junto a controles de reinicio e indicador de estado/FEN.
 * **Controlador (`app.js` - `ChessGameClient`):** Gestiona los clics del usuario en las casillas (origen y destino), compone la jugada en formato UCI (ej. `e2e4`) y se comunica mediante llamadas asíncronas (`fetch`) con los endpoints del backend (`/api/board/initial` y `/api/board/move`).
 
@@ -169,7 +171,7 @@ El frontend está implementado como una aplicación web ligera (Single Page Appl
 <!-- NOTA: 
      - Si añades más clases de test en el paquete `tests` (incluyendo pruebas con Mocks / dobles de prueba), añádelas al listado.
      - Documenta también las pruebas manuales que pide la rúbrica (conectar 2 usuarios, probar qué pasa si mandas un movimiento inválido o pides una sala que no existe). -->
-El repositorio incluye 28 pruebas unitarias automatizadas con JUnit 5 y AssertJ en el módulo `game`, organizadas por paquete:
+El repositorio incluye 28 pruebas unitarias automatizadas con JUnit 5 y AssertJ en el módulo `backend/game`, organizadas por paquete:
 * **`tests.algebraic`:** `AlgebraicPositionSerializerTest` y `AlgebraicPositionDeserializerTest`.
 * **`tests.fen`:** `FenBoardSerializerTest`, `FenBoardDeserializerTest` y `FenStateDeserializerTest`.
 * **`tests.uci`:** `UciMoveSerializerTest` y `UciMoveDeserializerTest`.

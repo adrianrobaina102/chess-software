@@ -88,7 +88,7 @@ Muestra el ciclo completo desde que el usuario hace clic en dos casillas hasta q
 Para ubicar cualquier archivo en 2 segundos según la Arquitectura Hexagonal:
 
 ```text
-game/src/main/java/software/ulpgc/chess/
+backend/game/src/main/java/software/ulpgc/chess/
 │
 ├── application/                         <-- EL CORE (Negocio puro, no sabe qué es Javalin ni HTML)
 │   ├── domain/model/                    <-- Entidades inmutables: Board, Move, Square, State, Piece, Color...
@@ -106,3 +106,4 @@ game/src/main/java/software/ulpgc/chess/
 │
 └── Main.java                            <-- COMPOSITION ROOT (Une todo con Pure DI y arranca el servidor)
 ```
+
