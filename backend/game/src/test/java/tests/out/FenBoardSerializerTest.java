@@ -1,7 +1,7 @@
 package tests.out;
 
 import org.junit.jupiter.api.Test;
-import software.ulpgc.chess.architecture.domain.model.Board;
+import software.ulpgc.chess.architecture.model.Board;
 import software.ulpgc.chess.infrastructure.adapters.in.FenBoardDeserializer;
 import software.ulpgc.chess.infrastructure.adapters.out.FenBoardSerializer;
 

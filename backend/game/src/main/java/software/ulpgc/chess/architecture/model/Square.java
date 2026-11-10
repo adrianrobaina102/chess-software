@@ -1,4 +1,4 @@
-package software.ulpgc.chess.architecture.domain.model;
+package software.ulpgc.chess.architecture.model;
 
 public record Square (File file, Rank rank) {
     public static Square at (String notation){
@@ -14,7 +14,7 @@ public record Square (File file, Rank rank) {
 
     private static void validateFormat(String square) {
         if (square == null || square.length() != 2) {
-            throw new ParseException("Formato de coordenada invÃ¡lido: " + square);
+            throw new ParseException("Formato de coordenada invÃƒÂ¡lido: " + square);
         }
     }
 

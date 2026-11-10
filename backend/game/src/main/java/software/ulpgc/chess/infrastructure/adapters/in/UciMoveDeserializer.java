@@ -1,6 +1,6 @@
 package software.ulpgc.chess.infrastructure.adapters.in;
 
-import software.ulpgc.chess.architecture.domain.model.Move;
+import software.ulpgc.chess.architecture.model.Move;
 import software.ulpgc.chess.architecture.ports.in.MoveDeserializer;
 
 public class UciMoveDeserializer implements MoveDeserializer {

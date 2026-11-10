@@ -1,7 +1,7 @@
 package software.ulpgc.chess.architecture.domain;
 
-import software.ulpgc.chess.architecture.domain.model.Board;
-import software.ulpgc.chess.architecture.domain.model.Move;
+import software.ulpgc.chess.architecture.model.Board;
+import software.ulpgc.chess.architecture.model.Move;
 import software.ulpgc.chess.architecture.ports.in.BoardDeserializer;
 import software.ulpgc.chess.architecture.ports.in.MoveDeserializer;
 import software.ulpgc.chess.architecture.ports.out.BoardSerializer;

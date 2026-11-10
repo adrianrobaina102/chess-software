@@ -3,9 +3,9 @@ package tests.in;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import software.ulpgc.chess.architecture.domain.model.Board;
-import software.ulpgc.chess.architecture.domain.model.Piece;
-import software.ulpgc.chess.architecture.domain.model.Square;
+import software.ulpgc.chess.architecture.model.Board;
+import software.ulpgc.chess.architecture.model.Piece;
+import software.ulpgc.chess.architecture.model.Square;
 import software.ulpgc.chess.infrastructure.adapters.in.FenBoardDeserializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,7 +19,7 @@ public class FenBoardDeserializerTest {
     }
 
     @Test
-    @DisplayName("Debe deserializar correctamente la posiciÃ³n inicial de ajedrez")
+    @DisplayName("Debe deserializar correctamente la posiciÃƒÂ³n inicial de ajedrez")
     void shouldDeserializeInitialBoard() {
         String fenInitial = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         Board expectedBoard = Board.initial();
@@ -30,7 +30,7 @@ public class FenBoardDeserializerTest {
     }
 
     @Test
-    @DisplayName("Debe deserializar un tablero vacÃ­o cuando el FEN indica 8 filas vacÃ­as")
+    @DisplayName("Debe deserializar un tablero vacÃƒÂ­o cuando el FEN indica 8 filas vacÃƒÂ­as")
     void shouldDeserializeEmptyBoard() {
         Board board = deserializer.deserialize("8/8/8/8/8/8/8/8");
 
@@ -39,7 +39,7 @@ public class FenBoardDeserializerTest {
     }
 
     @Test
-    @DisplayName("Debe deserializar una posiciÃ³n personalizada con pocas piezas")
+    @DisplayName("Debe deserializar una posiciÃƒÂ³n personalizada con pocas piezas")
     void shouldDeserializeCustomPosition() {
         String fenCustom = "4k3/8/8/8/8/8/8/4K3 w - - 0 1";
         Board actualBoard = deserializer.deserialize(fenCustom);
@@ -64,7 +64,7 @@ public class FenBoardDeserializerTest {
     }
 
     @Test
-    @DisplayName("Debe deserializar correctamente una posiciÃ³n compleja con mÃºltiples saltos numÃ©ricos")
+    @DisplayName("Debe deserializar correctamente una posiciÃƒÂ³n compleja con mÃƒÂºltiples saltos numÃƒÂ©ricos")
     void shouldDeserializeComplexPosition() {
         String fenComplex = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1";
         Board actualBoard = deserializer.deserialize(fenComplex);

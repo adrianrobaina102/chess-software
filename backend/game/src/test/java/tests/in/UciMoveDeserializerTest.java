@@ -1,10 +1,10 @@
 package tests.in;
 
 import org.junit.jupiter.api.Test;
-import software.ulpgc.chess.architecture.domain.model.File;
-import software.ulpgc.chess.architecture.domain.model.Move;
-import software.ulpgc.chess.architecture.domain.model.Rank;
-import software.ulpgc.chess.architecture.domain.model.Square;
+import software.ulpgc.chess.architecture.model.File;
+import software.ulpgc.chess.architecture.model.Move;
+import software.ulpgc.chess.architecture.model.Rank;
+import software.ulpgc.chess.architecture.model.Square;
 import software.ulpgc.chess.infrastructure.adapters.in.UciMoveDeserializer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

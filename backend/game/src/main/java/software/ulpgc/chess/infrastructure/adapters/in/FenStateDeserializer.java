@@ -1,6 +1,6 @@
 package software.ulpgc.chess.infrastructure.adapters.in;
 
-import software.ulpgc.chess.architecture.domain.model.State;
+import software.ulpgc.chess.architecture.model.State;
 import software.ulpgc.chess.architecture.ports.in.StateDeserializer;
 
 import java.util.Arrays;

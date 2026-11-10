@@ -27,7 +27,7 @@ public class Main {
         GetInitialBoardUseCase getInitialBoardUseCase = new GetInitialBoardUseCase(boardSerializer);
         MovePieceUseCase movePieceUseCase = new MovePieceUseCase(boardDeserializer, moveDeserializer, boardSerializer);
 
-        // 3. Servidor Javalin configurado para servir el frontend estÃ¡tico
+        // 3. Servidor Javalin configurado para servir el frontend estÃƒÂ¡tico
         String frontendPath = resolveFrontendPath();
         Javalin app = Javalin.create(config -> {
             config.staticFiles.add(frontendPath, Location.EXTERNAL);
@@ -43,7 +43,7 @@ public class Main {
         });
 
         System.out.println("Servidor iniciado:");
-        System.out.println(" - AplicaciÃ³n Web:  http://localhost:7070");
+        System.out.println(" - AplicaciÃƒÂ³n Web:  http://localhost:7070");
         System.out.println(" - Tablero inicial: http://localhost:7070/api/board/initial");
         System.out.println(" - Mover pieza:     http://localhost:7070/api/board/move?board=...&move=e2e4");
     }

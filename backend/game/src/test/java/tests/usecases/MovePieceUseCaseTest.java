@@ -32,7 +32,7 @@ public class MovePieceUseCaseTest {
 
         String resultFen = useCase.execute(new Input(initialFen, uciMove));
 
-        // En la fila 2 el peÃƒÂ³n de 'e' deja hueco (PPPP1PPP) y en la fila 4 aparece el peÃƒÂ³n (4P3)
+        // En la fila 2 el peÃƒÆ’Ã‚Â³n de 'e' deja hueco (PPPP1PPP) y en la fila 4 aparece el peÃƒÆ’Ã‚Â³n (4P3)
         assertThat(resultFen).isEqualTo("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR");
     }
 

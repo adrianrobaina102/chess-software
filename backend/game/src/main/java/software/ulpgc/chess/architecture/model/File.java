@@ -1,4 +1,4 @@
-package software.ulpgc.chess.architecture.domain.model;
+package software.ulpgc.chess.architecture.model;
 
 import java.util.Arrays;
 

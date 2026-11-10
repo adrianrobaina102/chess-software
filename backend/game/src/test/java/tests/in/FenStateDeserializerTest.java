@@ -3,7 +3,7 @@ package tests.in;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import software.ulpgc.chess.architecture.domain.model.State;
+import software.ulpgc.chess.architecture.model.State;
 import software.ulpgc.chess.infrastructure.adapters.in.FenStateDeserializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +49,7 @@ public class FenStateDeserializerTest {
     }
 
     @Test
-    @DisplayName("Debe deserializar derechos de enroque asimÃ©tricos")
+    @DisplayName("Debe deserializar derechos de enroque asimÃƒÂ©tricos")
     void shouldDeserializeAsymmetricalCastling() {
         String fen = "r3k2r/8/8/8/8/8/8/R3K2R w Qk - 0 15";
 
@@ -59,7 +59,7 @@ public class FenStateDeserializerTest {
     }
 
     @Test
-    @DisplayName("Debe deserializar un estado con un Ãºnico derecho de enroque")
+    @DisplayName("Debe deserializar un estado con un ÃƒÂºnico derecho de enroque")
     void shouldDeserializeSingleCastlingRight() {
         String fen = "8/8/8/8/8/8/8/4K2R w K - 10 42";
 

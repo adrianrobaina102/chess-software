@@ -1,8 +1,8 @@
 package software.ulpgc.chess.infrastructure.adapters.in;
 
-import software.ulpgc.chess.architecture.domain.model.File;
-import software.ulpgc.chess.architecture.domain.model.Rank;
-import software.ulpgc.chess.architecture.domain.model.Square;
+import software.ulpgc.chess.architecture.model.File;
+import software.ulpgc.chess.architecture.model.Rank;
+import software.ulpgc.chess.architecture.model.Square;
 import software.ulpgc.chess.architecture.ports.in.PositionDeserializer;
 
 public class AlgebraicPositionDeserializer implements PositionDeserializer {
