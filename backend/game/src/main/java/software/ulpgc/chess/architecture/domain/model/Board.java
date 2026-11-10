@@ -66,8 +66,8 @@ public final class Board {
         return pieceAt(new Square(file, rank));
     }
 
-    public Piece pieceAt(String square) {
-        return pieceAt(at(square));
+    public Piece pieceAt(String notation) {
+        return pieceAt(at(notation));
     }
 
     Piece pieceAt(Square square) {

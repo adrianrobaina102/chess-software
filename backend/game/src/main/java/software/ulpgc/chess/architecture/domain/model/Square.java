@@ -1,13 +1,13 @@
 package software.ulpgc.chess.architecture.domain.model;
 
 public record Square (File file, Rank rank) {
-    public static Square at (String square){
-        validateFormat(square);
+    public static Square at (String notation){
+        validateFormat(notation);
 
-        File file = parseFile(square);
-        Rank rank = parseRank(square);
+        File file = parseFile(notation);
+        Rank rank = parseRank(notation);
 
-        validateBounds(file, rank, square);
+        validateBounds(file, rank, notation);
 
         return new Square(file, rank);
     }

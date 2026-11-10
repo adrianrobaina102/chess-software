@@ -6,7 +6,7 @@ import software.ulpgc.chess.architecture.ports.in.BoardDeserializer;
 import software.ulpgc.chess.architecture.ports.in.MoveDeserializer;
 import software.ulpgc.chess.architecture.ports.out.BoardSerializer;
 
-public class MovePieceUseCase implements UseCases<MovePieceUseCase.Input, String> {
+public class MovePieceUseCase implements UseCase<MovePieceUseCase.Input, String> {
 
     public record Input(String board, String move) {}
 

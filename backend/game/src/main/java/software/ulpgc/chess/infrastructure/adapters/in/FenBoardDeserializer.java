@@ -29,11 +29,11 @@ public class FenBoardDeserializer implements BoardDeserializer {
     private Map<Square, Piece> piecesIn(int j, char[] rank) {
         int i = 1;
         Map<Square, Piece> map = new HashMap<>();
-        for (char order : rank) {
-            if (Character.isLetter(order)) {
-                map.put(Square.of(i++, j), Piece.getPiece(order));
+        for (char symbol : rank) {
+            if (Character.isLetter(symbol)) {
+                map.put(Square.of(i++, j), Piece.getPiece(symbol));
             } else {
-                i += Character.getNumericValue(order);
+                i += Character.getNumericValue(symbol);
             }
         }
         return map;
