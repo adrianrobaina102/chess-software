@@ -91,11 +91,15 @@ Para ubicar cualquier archivo en 2 segundos según la Arquitectura Hexagonal:
 backend/game/src/main/java/software/ulpgc/chess/
 │
 ├── architecture/                        <-- EL CORE (Negocio puro, no sabe qué es Javalin ni HTML)
-│   ├── domain/model/                    <-- Entidades inmutables: Board, Move, Square, State, Piece, Color...
-│   ├── ports/                           <-- Contratos de interfaz (ISP):
-│   │   ├── in/                          <-- Entrada: Deserializers (BoardDeserializer, MoveDeserializer...)
-│   │   └── out/                         <-- Salida: Serializers (BoardSerializer, MoveSerializer...)
-│   └── usecases/                        <-- Acciones del sistema: GetInitialBoardUseCase, MovePieceUseCase
+│   ├── domain/                          <-- Dominio y Casos de Uso
+│   │   ├── model/                       <-- Entidades inmutables: Board, Move, Square, State, Piece, Color...
+│   │   ├── UseCase                      <-- Interfaz base de casos de uso
+│   │   ├── GetInitialBoardUseCase       <-- Acción: tablero inicial
+│   │   └── MovePieceUseCase             <-- Acción: mover pieza
+│   │
+│   └── ports/                           <-- Contratos de interfaz (ISP):
+│       ├── in/                          <-- Entrada: Deserializers (BoardDeserializer, MoveDeserializer...)
+│       └── out/                         <-- Salida: Serializers (BoardSerializer, MoveSerializer...)
 │
 ├── infrastructure/                      <-- EL EXTERIOR (Traducción y librerías)
 │   └── adapters/                        <-- Implementaciones concretas:

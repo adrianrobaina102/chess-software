@@ -63,14 +63,22 @@ chess-software/
             ├── main/
             │   └── java/software/ulpgc/chess/
             │       ├── architecture/           # El Core (Puro, sin dependencias externas)
-            │       │   ├── domain/model/       # Entidades y objetos de valor inmutables
-            │       │   ├── ports/              # Interfaces de entrada y salida
-            │       │   │   ├── in/             # Puertos de entrada (lectura / deserializadores)
-            │       │   │   └── out/            # Puertos de salida (escritura / serializadores)
-            │       │   └── usecases/           # Casos de uso (orquestadores de negocio)
-            │       │       ├── UseCases.java
-            │       │       ├── GetInitialBoardUseCase.java
-            │       │       └── MovePieceUseCase.java
+            │       │   ├── domain/             # Dominio y casos de uso
+            │       │   │   ├── model/          # Entidades y objetos de valor inmutables
+            │       │   │   │   ├── Board.java
+            │       │   │   │   ├── Square.java
+            │       │   │   │   ├── Move.java
+            │       │   │   │   ├── Piece.java
+            │       │   │   │   ├── Color.java
+            │       │   │   │   ├── File.java
+            │       │   │   │   ├── Rank.java
+            │       │   │   │   └── State.java
+            │       │   │   ├── UseCase.java
+            │       │   │   ├── GetInitialBoardUseCase.java
+            │       │   │   └── MovePieceUseCase.java
+            │       │   └── ports/              # Interfaces de entrada y salida
+            │       │       ├── in/             # Puertos de entrada (lectura / deserializadores)
+            │       │       └── out/            # Puertos de salida (escritura / serializadores)
             │       ├── infrastructure/         # El Exterior (Traducción y comunicación)
             │       │   └── adapters/           # Implementaciones concretas
             │       │       ├── in/             # Adaptadores de entrada (Javalin EndPoints y Deserializadores)
@@ -119,7 +127,7 @@ Contiene las estructuras de datos inmutables y la representación lógica del aj
 * `Piece`, `Color`, `File`, `Rank`: Enumerados que definen las piezas, bandos y límites geométricos del tablero (`a-h`, `1-8`).
 * `State`: Encapsula el estado global de la partida (turnos, derechos de enroque, captura al paso y contadores).
 
-### Casos de Uso (`software.ulpgc.chess.architecture.usecases`)
+### Casos de Uso (`software.ulpgc.chess.architecture.domain`)
 Orquestan la lógica pura apoyándose en los puertos y el dominio, totalmente aislados de la web:
 * `GetInitialBoardUseCase`: Consulta el tablero inicial en el dominio y lo serializa a texto.
 * `MovePieceUseCase`: Recibe un `Input(board, move)`, deserializa ambos elementos mediante los puertos correspondientes, ejecuta `Board.move(move)` y serializa el tablero resultante mediante una tubería de métodos privados `process(...)`.

@@ -19,23 +19,25 @@ Dentro de cada módulo del backend (ej. `backend/game`), el sistema sigue **Arqu
 backend/game/src/main/java/software/ulpgc/chess/
 │
 ├── architecture/                        <-- Core (Reglas del juego, puro e inmutable)
-│   ├── domain/model/                    <-- Entidades y objetos de valor
-│   │   ├── Board, Move, Square, State
-│   │   └── Color, File, Piece, Rank
+│   ├── domain/                          <-- Dominio y casos de uso
+│   │   ├── model/                       <-- Entidades y objetos de valor
+│   │   │   ├── Board, Move, Square, State
+│   │   │   └── Color, File, Piece, Rank
+│   │   ├── UseCase
+│   │   ├── GetInitialBoardUseCase
+│   │   └── MovePieceUseCase
 │   │
-│   ├── ports/                           <-- Contratos de entrada y salida (ISP extremo)
-│   │   ├── in/                          <-- Puertos de entrada (lectura / deserializadores)
-│   │   │   ├── BoardDeserializer
-│   │   │   ├── MoveDeserializer
-│   │   │   ├── PositionDeserializer
-│   │   │   └── StateDeserializer
-│   │   │
-│   │   └── out/                         <-- Puertos de salida (escritura / serializadores)
-│   │       ├── BoardSerializer
-│   │       ├── MoveSerializer
-│   │       └── PositionSerializer
-│   │
-│   └── usecases/                        <-- Casos de uso / orquestación
+│   └── ports/                           <-- Contratos de entrada y salida (ISP extremo)
+│       ├── in/                          <-- Puertos de entrada (lectura / deserializadores)
+│       │   ├── BoardDeserializer
+│       │   ├── MoveDeserializer
+│       │   ├── PositionDeserializer
+│       │   └── StateDeserializer
+│       │
+│       └── out/                         <-- Puertos de salida (escritura / serializadores)
+│           ├── BoardSerializer
+│           ├── MoveSerializer
+│           └── PositionSerializer
 │
 ├── infrastructure/                      <-- Exterior (Traducción y comunicación)
 │   └── adapters/
