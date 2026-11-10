@@ -105,6 +105,11 @@ El backend expone su funcionalidad a través de una API HTTP implementada con Ja
 
 ## 6. Arquitectura hexagonal del Backend
 
+> [!NOTE]
+> Para una visión visual exhaustiva de todo el diseño, consulta el **[Diagrama de Clases UML en docs/diagrams/](docs/diagrams/README.md)** con el modelado detallado de todas las clases, atributos, métodos, puertos y adaptadores.
+
+![Diagrama de Clases UML del Backend](docs/diagrams/chess-backend-class-diagram.jpg)
+
 ### Dominio (`software.ulpgc.chess.architecture.domain.model`)
 <!-- NOTA: Si añades nuevas clases al modelo (ej. Room, User, Game, Rules...) o casos de uso, documéntalos aquí -->
 Contiene las estructuras de datos inmutables y la representación lógica del ajedrez, sin dependencias hacia librerías externas ni formatos de transporte:

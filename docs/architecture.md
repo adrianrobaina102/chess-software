@@ -105,3 +105,12 @@ backend/game/src/main/java/software/ulpgc/chess/
 └── Main.java                            <-- COMPOSITION ROOT (Une todo con Pure DI y arranca el servidor)
 ```
 
+---
+
+## 4. Diagrama de Clases UML del Backend
+
+Para consultar el modelado exhaustivo de clases, atributos, métodos, relaciones y puertos, ver [docs/diagrams/README.md](diagrams/README.md).
+
+![Diagrama de Clases - Chess Backend](diagrams/chess-backend-class-diagram.jpg)
+
+
