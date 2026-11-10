@@ -1,4 +1,4 @@
-package software.ulpgc.chess.architecture.usecases;
+package software.ulpgc.chess.architecture.domain;
 
 import software.ulpgc.chess.architecture.domain.model.Board;
 import software.ulpgc.chess.architecture.domain.model.Move;

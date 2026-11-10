@@ -1,8 +1,8 @@
 package software.ulpgc.chess.infrastructure.adapters.in;
 
 import io.javalin.http.Context;
-import software.ulpgc.chess.architecture.usecases.MovePieceUseCase;
-import software.ulpgc.chess.architecture.usecases.MovePieceUseCase.Input;
+import software.ulpgc.chess.architecture.domain.MovePieceUseCase;
+import software.ulpgc.chess.architecture.domain.MovePieceUseCase.Input;
 
 public class MovePieceEndPoint implements EndPoint {
     private final MovePieceUseCase useCase;

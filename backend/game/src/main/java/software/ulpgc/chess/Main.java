@@ -5,8 +5,8 @@ import io.javalin.http.staticfiles.Location;
 import software.ulpgc.chess.architecture.ports.in.BoardDeserializer;
 import software.ulpgc.chess.architecture.ports.in.MoveDeserializer;
 import software.ulpgc.chess.architecture.ports.out.BoardSerializer;
-import software.ulpgc.chess.architecture.usecases.GetInitialBoardUseCase;
-import software.ulpgc.chess.architecture.usecases.MovePieceUseCase;
+import software.ulpgc.chess.architecture.domain.GetInitialBoardUseCase;
+import software.ulpgc.chess.architecture.domain.MovePieceUseCase;
 import software.ulpgc.chess.infrastructure.adapters.in.GetInitialBoardEndPoint;
 import software.ulpgc.chess.infrastructure.adapters.in.MovePieceEndPoint;
 import software.ulpgc.chess.infrastructure.adapters.in.FenBoardDeserializer;
@@ -27,7 +27,7 @@ public class Main {
         GetInitialBoardUseCase getInitialBoardUseCase = new GetInitialBoardUseCase(boardSerializer);
         MovePieceUseCase movePieceUseCase = new MovePieceUseCase(boardDeserializer, moveDeserializer, boardSerializer);
 
-        // 3. Servidor Javalin configurado para servir el frontend estático
+        // 3. Servidor Javalin configurado para servir el frontend estÃ¡tico
         String frontendPath = resolveFrontendPath();
         Javalin app = Javalin.create(config -> {
             config.staticFiles.add(frontendPath, Location.EXTERNAL);
@@ -43,7 +43,7 @@ public class Main {
         });
 
         System.out.println("Servidor iniciado:");
-        System.out.println(" - Aplicación Web:  http://localhost:7070");
+        System.out.println(" - AplicaciÃ³n Web:  http://localhost:7070");
         System.out.println(" - Tablero inicial: http://localhost:7070/api/board/initial");
         System.out.println(" - Mover pieza:     http://localhost:7070/api/board/move?board=...&move=e2e4");
     }

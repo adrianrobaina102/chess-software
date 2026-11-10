@@ -2,7 +2,7 @@ package tests.usecases;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import software.ulpgc.chess.architecture.usecases.GetInitialBoardUseCase;
+import software.ulpgc.chess.architecture.domain.GetInitialBoardUseCase;
 import software.ulpgc.chess.infrastructure.adapters.out.FenBoardSerializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
