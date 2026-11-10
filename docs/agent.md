@@ -18,41 +18,40 @@ Dentro de cada módulo del backend (ej. `backend/game`), el sistema sigue **Arqu
 ```text
 backend/game/src/main/java/software/ulpgc/chess/
 │
-├── application/                         <-- Core (Reglas del juego, puro e inmutable)
+├── architecture/                        <-- Core (Reglas del juego, puro e inmutable)
 │   ├── domain/model/                    <-- Entidades y objetos de valor
 │   │   ├── Board, Move, Square, State
 │   │   └── Color, File, Piece, Rank
 │   │
 │   ├── ports/                           <-- Contratos de entrada y salida (ISP extremo)
-│   │   ├── serializer/                  <-- Puertos de salida (escritura)
-│   │   │   ├── BoardSerializer
-│   │   │   ├── MoveSerializer
-│   │   │   └── PositionSerializer
+│   │   ├── in/                          <-- Puertos de entrada (lectura / deserializadores)
+│   │   │   ├── BoardDeserializer
+│   │   │   ├── MoveDeserializer
+│   │   │   ├── PositionDeserializer
+│   │   │   └── StateDeserializer
 │   │   │
-│   │   └── deserializer/                <-- Puertos de entrada (lectura)
-│   │       ├── BoardDeserializer
-│   │       ├── MoveDeserializer
-│   │       ├── PositionDeserializer
-│   │       └── StateDeserializer
+│   │   └── out/                         <-- Puertos de salida (escritura / serializadores)
+│   │       ├── BoardSerializer
+│   │       ├── MoveSerializer
+│   │       └── PositionSerializer
 │   │
 │   └── usecases/                        <-- Casos de uso / orquestación
 │
 ├── infrastructure/                      <-- Exterior (Traducción y comunicación)
-│   └── adapters/                        <-- Implementaciones agrupadas por formato/tecnología
-│       ├── algebraic/                   <-- Notación algebraica
-│       │   ├── AlgebraicPositionSerializer
-│       │   └── AlgebraicPositionDeserializer
-│       │
-│       ├── fen/                         <-- Notación FEN
-│       │   ├── FenBoardSerializer
+│   └── adapters/
+│       ├── in/                          <-- Adaptadores de entrada (Javalin EndPoints y Deserializadores)
+│       │   ├── EndPoint
+│       │   ├── GetInitialBoardEndPoint
+│       │   ├── MovePieceEndPoint
+│       │   ├── AlgebraicPositionDeserializer
 │       │   ├── FenBoardDeserializer
-│       │   └── FenStateDeserializer
-│       │
-│       ├── uci/                         <-- Protocolo UCI
-│       │   ├── UciMoveSerializer
+│       │   ├── FenStateDeserializer
 │       │   └── UciMoveDeserializer
 │       │
-│       └── endpoints/                   <-- Adaptadores de entrada Web (Javalin)
+│       └── out/                         <-- Adaptadores de salida (Serializadores)
+│           ├── AlgebraicPositionSerializer
+│           ├── FenBoardSerializer
+│           └── UciMoveSerializer
 │
 └── Main.java                            <-- Composition root / cableado de dependencias
 ```
@@ -60,21 +59,23 @@ backend/game/src/main/java/software/ulpgc/chess/
 Y en el bloque de pruebas:
 ```text
 backend/game/src/test/java/tests/
-├── algebraic/                           <-- Tests de adaptadores algebraicos
-├── fen/                                 <-- Tests de adaptadores FEN
-└── uci/                                 <-- Tests de adaptadores UCI
+├── in/                                  <-- Tests de adaptadores de entrada
+├── out/                                 <-- Tests de adaptadores de salida
+└── usecases/                            <-- Tests de casos de uso
 ```
 
 ---
 
 ## 3. Reglas de Nomenclatura y Clean Code (ISP y SRP Extremos)
 El proyecto sigue una convención de nombres estricta:
-1. **Modelos (`application.domain.model`):** Nombres puros del dominio (`Board`, `Color`, `File`, `Move`, `Piece`, `Rank`, `Square`, `State`). Inmutabilidad por defecto usando `record`, `enum` y campos `final`.
-2. **Puertos (`application.ports`):** Separados por dirección de operación:
-   - `ports.serializer`: Puertos de salida nombrados como `<Entidad>Serializer`.
-   - `ports.deserializer`: Puertos de entrada nombrados como `<Entidad>Deserializer`.
-3. **Adaptadores (`infrastructure.adapters.<formato>`):** Clases concretas nombradas estrictamente como `<Formato/Librería><NombreDelPuerto>` ubicadas en el subpaquete de su formato correspondiente (`adapters.algebraic`, `adapters.fen`, `adapters.uci`), o `<Recurso>EndPoint` en `adapters.endpoints`.
-4. **Tests (`tests.<formato>`):** Nombradas exactamente como `<NombreDeLaClase>Test` utilizando JUnit 5 y AssertJ.
+1. **Modelos (`architecture.domain.model`):** Nombres puros del dominio (`Board`, `Color`, `File`, `Move`, `Piece`, `Rank`, `Square`, `State`). Inmutabilidad por defecto usando `record`, `enum` y campos `final`.
+2. **Puertos (`architecture.ports`):** Separados por dirección de operación:
+   - `ports.in`: Puertos de entrada nombrados como `<Entidad>Deserializer`.
+   - `ports.out`: Puertos de salida nombrados como `<Entidad>Serializer` (y futuros `Repository`).
+3. **Adaptadores (`infrastructure.adapters`):** Clases concretas ubicadas en:
+   - `adapters.in`: Adaptadores de entrada web (`<Recurso>EndPoint`) y deserializadores de formato (`<Formato><Entidad>Deserializer`).
+   - `adapters.out`: Adaptadores de serialización y persistencia (`<Formato><Entidad>Serializer`).
+4. **Tests (`tests.in`, `tests.out`, `tests.usecases`):** Nombradas exactamente como `<NombreDeLaClase>Test` utilizando JUnit 5 y AssertJ.
 
 ---
 
@@ -98,12 +99,12 @@ Ninguna clase del proyecto (ni siquiera dentro de `infrastructure.adapters`) deb
 ## 5. Reglas de Integración HTTP (Servidor Web con Javalin)
 El sistema expone su lógica de negocio al exterior mediante una API HTTP utilizando **Javalin**. La integración debe respetar estrictamente la Arquitectura Hexagonal y la Inversión de Control:
 
-### A. Aislamiento del Core (Application)
-- **Cero dependencias web:** El directorio `application` (Dominio, Casos de Uso y Puertos) **jamás** debe importar clases de Javalin (como `Context`), ni saber que existe un servidor web.
+### A. Aislamiento del Core (Architecture)
+- **Cero dependencias web:** El directorio `architecture` (Dominio, Casos de Uso y Puertos) **jamás** debe importar clases de Javalin (como `Context`), ni saber que existe un servidor web.
 - Los Casos de Uso orquestan la lógica y devuelven tipos primitivos, objetos del dominio, o `String` (usando un puerto de serialización) de vuelta al adaptador que los llamó.
 
 ### B. Adaptadores de Entrada Web (Endpoints)
-- Se alojan en `infrastructure.adapters.endpoints`.
+- Se alojan en `infrastructure.adapters.in`.
 - **Misión de Traducción:** Un `EndPoint` actúa como traductor bilingüe entre Javalin y el Core.
 - **Regla de Inyección:** Deben recibir por constructor el/los Casos de Uso necesarios y el objeto `Context` de Javalin.
 - **Flujo estricto del método `execute()`:**
@@ -171,7 +172,7 @@ Se considerará alcanzado un "Gran Paso" cuando se cumpla al menos uno de los si
 Para descargar al desarrollador de la fatiga mental y asegurar el cumplimiento de la rúbrica oficial de la asignatura (**Ingeniería de Software 2 — ULPGC**), el asistente tiene la obligación de monitorizar de forma constante e interrumpir proactivamente con una advertencia visible ante las siguientes situaciones:
 
 ### A. Alertas de Arquitectura Hexagonal y Aislamiento de Capas
-- **Fuga de Frameworks al Core:** Si se intenta importar Javalin (`Context`, etc.), Gson, frameworks de BD o clases de red en `application` (Dominio, Puertos o Casos de Uso) $\to$ *"¡Ojo, jefe! Estamos rompiendo la Arquitectura Hexagonal: el core no puede conocer frameworks externos ni librerías de infraestructura."*
+- **Fuga de Frameworks al Core:** Si se intenta importar Javalin (`Context`, etc.), Gson, frameworks de BD o clases de red en `architecture` (Dominio, Puertos o Casos de Uso) $\to$ *"¡Ojo, jefe! Estamos rompiendo la Arquitectura Hexagonal: el core no puede conocer frameworks externos ni librerías de infraestructura."*
 - **Acceso Directo a Persistencia desde Frontend:** Si se propone que el cliente web acceda directamente a bases de datos o almacenamiento $\to$ *"¡Ojo, jefe! La rúbrica prohíbe que el frontend escriba o lea directamente de la persistencia sin pasar por el backend."*
 - **UI Acoplada a Red en Frontend:** Si en el frontend se hacen peticiones HTTP/Fetch directas desde los componentes visuales o manejadores de eventos $\to$ *"¡Ojo, jefe! El frontend debe seguir una separación hexagonal ligera: la UI debe delegar en un caso de uso o puerto de servicio, con un adaptador de comunicación sustituible por mocks."*
 - **Modelo Acoplado a Transporte:** Si las entidades del dominio se usan como payloads crudos de transporte o dependen del protocolo HTTP/WebSocket $\to$ *"¡Ojo, jefe! El modelo de partida debe permanecer separado de la capa de transporte (usar DTOs / Serializadores)."*

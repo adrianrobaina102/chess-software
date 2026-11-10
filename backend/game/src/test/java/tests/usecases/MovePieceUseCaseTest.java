@@ -3,11 +3,11 @@ package tests.usecases;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import software.ulpgc.chess.application.usecases.MovePieceUseCase;
-import software.ulpgc.chess.application.usecases.MovePieceUseCase.Input;
-import software.ulpgc.chess.infrastructure.adapters.fen.FenBoardDeserializer;
-import software.ulpgc.chess.infrastructure.adapters.fen.FenBoardSerializer;
-import software.ulpgc.chess.infrastructure.adapters.uci.UciMoveDeserializer;
+import software.ulpgc.chess.architecture.usecases.MovePieceUseCase;
+import software.ulpgc.chess.architecture.usecases.MovePieceUseCase.Input;
+import software.ulpgc.chess.infrastructure.adapters.in.FenBoardDeserializer;
+import software.ulpgc.chess.infrastructure.adapters.out.FenBoardSerializer;
+import software.ulpgc.chess.infrastructure.adapters.in.UciMoveDeserializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,7 +32,7 @@ public class MovePieceUseCaseTest {
 
         String resultFen = useCase.execute(new Input(initialFen, uciMove));
 
-        // En la fila 2 el peón de 'e' deja hueco (PPPP1PPP) y en la fila 4 aparece el peón (4P3)
+        // En la fila 2 el peÃ³n de 'e' deja hueco (PPPP1PPP) y en la fila 4 aparece el peÃ³n (4P3)
         assertThat(resultFen).isEqualTo("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR");
     }
 

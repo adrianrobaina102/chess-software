@@ -2,16 +2,16 @@ package software.ulpgc.chess;
 
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
-import software.ulpgc.chess.application.ports.deserializer.BoardDeserializer;
-import software.ulpgc.chess.application.ports.deserializer.MoveDeserializer;
-import software.ulpgc.chess.application.ports.serializer.BoardSerializer;
-import software.ulpgc.chess.application.usecases.GetInitialBoardUseCase;
-import software.ulpgc.chess.application.usecases.MovePieceUseCase;
-import software.ulpgc.chess.infrastructure.adapters.endpoints.GetInitialBoardEndPoint;
-import software.ulpgc.chess.infrastructure.adapters.endpoints.MovePieceEndPoint;
-import software.ulpgc.chess.infrastructure.adapters.fen.FenBoardDeserializer;
-import software.ulpgc.chess.infrastructure.adapters.fen.FenBoardSerializer;
-import software.ulpgc.chess.infrastructure.adapters.uci.UciMoveDeserializer;
+import software.ulpgc.chess.architecture.ports.in.BoardDeserializer;
+import software.ulpgc.chess.architecture.ports.in.MoveDeserializer;
+import software.ulpgc.chess.architecture.ports.out.BoardSerializer;
+import software.ulpgc.chess.architecture.usecases.GetInitialBoardUseCase;
+import software.ulpgc.chess.architecture.usecases.MovePieceUseCase;
+import software.ulpgc.chess.infrastructure.adapters.in.GetInitialBoardEndPoint;
+import software.ulpgc.chess.infrastructure.adapters.in.MovePieceEndPoint;
+import software.ulpgc.chess.infrastructure.adapters.in.FenBoardDeserializer;
+import software.ulpgc.chess.infrastructure.adapters.in.UciMoveDeserializer;
+import software.ulpgc.chess.infrastructure.adapters.out.FenBoardSerializer;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

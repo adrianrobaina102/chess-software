@@ -90,19 +90,17 @@ Para ubicar cualquier archivo en 2 segundos según la Arquitectura Hexagonal:
 ```text
 backend/game/src/main/java/software/ulpgc/chess/
 │
-├── application/                         <-- EL CORE (Negocio puro, no sabe qué es Javalin ni HTML)
+├── architecture/                        <-- EL CORE (Negocio puro, no sabe qué es Javalin ni HTML)
 │   ├── domain/model/                    <-- Entidades inmutables: Board, Move, Square, State, Piece, Color...
 │   ├── ports/                           <-- Contratos de interfaz (ISP):
-│   │   ├── serializer/                  <-- Salida: BoardSerializer, MoveSerializer...
-│   │   └── deserializer/                <-- Entrada: BoardDeserializer, MoveDeserializer...
+│   │   ├── in/                          <-- Entrada: Deserializers (BoardDeserializer, MoveDeserializer...)
+│   │   └── out/                         <-- Salida: Serializers (BoardSerializer, MoveSerializer...)
 │   └── usecases/                        <-- Acciones del sistema: GetInitialBoardUseCase, MovePieceUseCase
 │
 ├── infrastructure/                      <-- EL EXTERIOR (Traducción y librerías)
 │   └── adapters/                        <-- Implementaciones concretas:
-│       ├── algebraic/                   <-- Notación de casillas 'e4' (AlgebraicPosition...)
-│       ├── fen/                         <-- Notación FEN (FenBoardSerializer/Deserializer...)
-│       ├── uci/                         <-- Notación UCI 'e2e4' (UciMoveSerializer/Deserializer)
-│       └── endpoints/                   <-- Adaptadores Web Javalin (GetInitialBoardEndPoint, MovePieceEndPoint)
+│       ├── in/                          <-- Adaptadores de entrada: Javalin EndPoints y Deserializadores (FEN, UCI, Algebraic)
+│       └── out/                         <-- Adaptadores de salida: Serializadores de formato (FEN, UCI, Algebraic)
 │
 └── Main.java                            <-- COMPOSITION ROOT (Une todo con Pure DI y arranca el servidor)
 ```
