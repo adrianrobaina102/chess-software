@@ -23,42 +23,62 @@ public enum Piece {
     Piece(char symbol) {
         this.symbol = symbol;
     }
-    public char getSymbol() {return this.symbol;}
-    Color color()
+    public char symbol() {
+        return this.symbol;
+    }
+
+    public char getSymbol() {
+        return symbol();
+    }
+
+    public Color color()
     {
         return isWhite() ? White : Black;
     }
-    public static Piece getPiece(char symbol)
+
+    public static Piece from(char symbol)
     {
         return Arrays.stream(Piece.values())
                 .filter(p -> p.symbol == symbol)
                 .findFirst()
                 .orElse(null);
     }
-    boolean isPawn()
+
+    public static Piece getPiece(char symbol)
+    {
+        return from(symbol);
+    }
+
+    public boolean isPawn()
     {
         return this == WhitePawn || this == BlackPawn;
     }
-    boolean isRook()
+
+    public boolean isRook()
     {
         return this == WhiteRook || this == BlackRook;
     }
-    boolean isQueen()
+
+    public boolean isQueen()
     {
         return this == WhiteQueen || this == BlackQueen;
     }
-    boolean isKnight()
+
+    public boolean isKnight()
     {
         return this == WhiteKnight || this == BlackKnight;
     }
-    boolean isBishop()
+
+    public boolean isBishop()
     {
         return this == WhiteBishop || this == BlackBishop;
     }
-    boolean isKing() {
+
+    public boolean isKing() {
         return this == WhiteKing || this == BlackKing;
     }
-    private boolean isWhite()
+
+    public boolean isWhite()
     {
         return this == WhitePawn ||
                 this == WhiteRook ||

@@ -70,7 +70,7 @@ public final class Board {
         return pieceAt(at(notation));
     }
 
-    Piece pieceAt(Square square) {
+    public Piece pieceAt(Square square) {
         return pieces.get(square);
     }
 

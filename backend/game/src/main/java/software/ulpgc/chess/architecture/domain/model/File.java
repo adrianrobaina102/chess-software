@@ -11,10 +11,14 @@ public enum File {
     public char symbol() {
         return this.symbol;
     }
-    public static File getFile(char symbol) {
+    public static File from(char symbol) {
         return Arrays.stream(File.values())
                 .filter(f -> f.symbol == symbol)
                 .findFirst()
                 .orElse(null);
+    }
+
+    public static File getFile(char symbol) {
+        return from(symbol);
     }
 }

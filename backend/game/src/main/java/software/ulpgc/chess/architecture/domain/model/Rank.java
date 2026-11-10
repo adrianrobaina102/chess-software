@@ -9,10 +9,14 @@ public enum Rank {
         this.symbol = symbol;
     }
     public int symbol() {return this.symbol;}
-    public static Rank getRank(int rankValue) {
+    public static Rank from(int rankValue) {
         return Arrays.stream(Rank.values())
                 .filter(rank -> rank.symbol == rankValue)
                 .findFirst()
                 .orElse(null);
+    }
+
+    public static Rank getRank(int rankValue) {
+        return from(rankValue);
     }
 }
