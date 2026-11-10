@@ -24,15 +24,15 @@ public class FenBoardSerializer implements BoardSerializer {
         int emptyCount = 0;
         StringBuilder fen = new StringBuilder();
         for (int file = 1; file <= 8; file++) {
-            String element = getSymbolAt(board, file, rank);
-            if (element.equals("Vacio")) {
+            Piece piece = board.pieces().get(Square.of(file, rank));
+            if (piece == null) {
                 emptyCount++;
             } else {
                 if (emptyCount > 0) {
                     fen.append(emptyCount);
                     emptyCount = 0;
                 }
-                fen.append(element);
+                fen.append(piece.getSymbol());
             }
         }
         if (emptyCount > 0)
@@ -40,15 +40,12 @@ public class FenBoardSerializer implements BoardSerializer {
         return fen.toString();
     }
 
-    public String getSymbolAt(Board board, int i, int j) {
-        return getSymbolAt(board, Square.of(i, j));
+    public String getSymbolAt(Board board, int file, int rank) {
+        return getSymbolAt(board, Square.of(file, rank));
     }
 
     private String getSymbolAt(Board board, Square square) {
-        return symbolOf(board.pieces().get(square));
-    }
-
-    private String symbolOf(Piece piece) {
-        return piece == null ? "Vacio" : String.valueOf(piece.getSymbol());
+        Piece piece = board.pieces().get(square);
+        return piece == null ? "" : String.valueOf(piece.getSymbol());
     }
 }
