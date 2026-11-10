@@ -19,13 +19,14 @@ Dentro de cada módulo del backend (ej. `backend/game`), el sistema sigue **Arqu
 backend/game/src/main/java/software/ulpgc/chess/
 │
 ├── architecture/                        <-- Core (Reglas del juego, puro e inmutable)
-│   ├── domain/                          <-- Dominio y casos de uso
-│   │   ├── model/                       <-- Entidades y objetos de valor
-│   │   │   ├── Board, Move, Square, State
-│   │   │   └── Color, File, Piece, Rank
+│   ├── domain/                          <-- Casos de uso
 │   │   ├── UseCase
 │   │   ├── GetInitialBoardUseCase
 │   │   └── MovePieceUseCase
+│   │
+│   ├── model/                           <-- Entidades y objetos de valor
+│   │   ├── Board, Move, Square, State
+│   │   └── Color, File, Piece, Rank
 │   │
 │   └── ports/                           <-- Contratos de entrada y salida (ISP extremo)
 │       ├── in/                          <-- Puertos de entrada (lectura / deserializadores)
@@ -70,7 +71,7 @@ backend/game/src/test/java/tests/
 
 ## 3. Reglas de Nomenclatura y Clean Code (ISP y SRP Extremos)
 El proyecto sigue una convención de nombres estricta:
-1. **Modelos (`architecture.domain.model`):** Nombres puros del dominio (`Board`, `Color`, `File`, `Move`, `Piece`, `Rank`, `Square`, `State`). Inmutabilidad por defecto usando `record`, `enum` y campos `final`.
+1. **Modelos (`architecture.model`):** Nombres puros del dominio (`Board`, `Color`, `File`, `Move`, `Piece`, `Rank`, `Square`, `State`). Inmutabilidad por defecto usando `record`, `enum` y campos `final`.
 2. **Puertos (`architecture.ports`):** Separados por dirección de operación:
    - `ports.in`: Puertos de entrada nombrados como `<Entidad>Deserializer`.
    - `ports.out`: Puertos de salida nombrados como `<Entidad>Serializer` (y futuros `Repository`).

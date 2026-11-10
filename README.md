@@ -63,19 +63,19 @@ chess-software/
             ├── main/
             │   └── java/software/ulpgc/chess/
             │       ├── architecture/           # El Core (Puro, sin dependencias externas)
-            │       │   ├── domain/             # Dominio y casos de uso
-            │       │   │   ├── model/          # Entidades y objetos de valor inmutables
-            │       │   │   │   ├── Board.java
-            │       │   │   │   ├── Square.java
-            │       │   │   │   ├── Move.java
-            │       │   │   │   ├── Piece.java
-            │       │   │   │   ├── Color.java
-            │       │   │   │   ├── File.java
-            │       │   │   │   ├── Rank.java
-            │       │   │   │   └── State.java
+            │       │   ├── domain/             # Casos de uso y orquestación de negocio
             │       │   │   ├── UseCase.java
             │       │   │   ├── GetInitialBoardUseCase.java
             │       │   │   └── MovePieceUseCase.java
+            │       │   ├── model/              # Entidades y objetos de valor inmutables
+            │       │   │   ├── Board.java
+            │       │   │   ├── Square.java
+            │       │   │   ├── Move.java
+            │       │   │   ├── Piece.java
+            │       │   │   ├── Color.java
+            │       │   │   ├── File.java
+            │       │   │   ├── Rank.java
+            │       │   │   └── State.java
             │       │   └── ports/              # Interfaces de entrada y salida
             │       │       ├── in/             # Puertos de entrada (lectura / deserializadores)
             │       │       └── out/            # Puertos de salida (escritura / serializadores)
@@ -118,7 +118,7 @@ El backend expone su funcionalidad a través de una API HTTP implementada con Ja
 
 ![Diagrama de Clases UML del Backend](docs/diagrams/chess-backend-class-diagram.jpg)
 
-### Dominio (`software.ulpgc.chess.architecture.domain.model`)
+### Modelo (`software.ulpgc.chess.architecture.model`)
 <!-- NOTA: Si añades nuevas clases al modelo (ej. Room, User, Game, Rules...) o casos de uso, documéntalos aquí -->
 Contiene las estructuras de datos inmutables y la representación lógica del ajedrez, sin dependencias hacia librerías externas ni formatos de transporte:
 * `Board`: Gestiona la disposición de las piezas en el tablero mediante una estructura inmutable (`Map<Square, Piece>`). Proporciona la configuración inicial y la transición de estado al aplicar movimientos (`move()`).
