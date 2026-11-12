@@ -28,6 +28,10 @@ backend/game/src/main/java/software/ulpgc/chess/
 │   │   ├── Board, Move, Square, State
 │   │   └── Color, File, Piece, Rank
 │   │
+│   ├── rules/                           <-- Reglas de movimiento por pieza
+│   │   ├── PieceRule
+│   │   └── RookRule, BishopRule, KnightRule, QueenRule, KingRule, PawnRule
+│   │
 │   └── ports/                           <-- Contratos de entrada y salida (ISP extremo)
 │       ├── in/                          <-- Puertos de entrada (lectura / deserializadores)
 │       │   ├── BoardDeserializer
@@ -197,3 +201,7 @@ Para descargar al desarrollador de la fatiga mental y asegurar el cumplimiento d
 
 ### E. Alertas de GitFlow y Grandes Hitos
 - **Hito Funcional Completado:** Al terminar un subsistema completo (ej. sistema de salas, multiusuario, persistencia, reloj) con tests en verde $\to$ *"¡Ojo, jefe! Hemos completado este hito funcional, toca hacer merge a master y clavar el tag vX.X.0"*.
+
+### F. Reglas de Diagramas UML (Solo `.jpg` en el repositorio)
+- **Prohibido guardar archivos `.drawio` en el repositorio:** Los diagramas editables (`.drawio`) se mantienen fuera del repo (en Google Drive). En `docs/diagrams/` solo se almacena la imagen exportada en formato **`.jpg`** (ej. `docs/diagrams/chess-backend-class-diagram.jpg`).
+- **Obligación de subir `.jpg`:** Cada vez que se modifique el diseño o se genere nuevo XML de Draw.io para el usuario, el asistente **DEBE exigirle** al usuario que exporte y suba la imagen `.jpg` actualizada antes de dar por cerrado el cambio en el diagrama.
