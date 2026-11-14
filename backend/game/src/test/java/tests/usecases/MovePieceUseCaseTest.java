@@ -8,6 +8,7 @@ import software.ulpgc.chess.architecture.domain.MovePieceUseCase.Input;
 import software.ulpgc.chess.infrastructure.adapters.in.FenBoardDeserializer;
 import software.ulpgc.chess.infrastructure.adapters.out.FenBoardSerializer;
 import software.ulpgc.chess.infrastructure.adapters.in.UciMoveDeserializer;
+import software.ulpgc.chess.infrastructure.adapters.process.ChessMoveValidator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,7 +21,8 @@ public class MovePieceUseCaseTest {
         useCase = new MovePieceUseCase(
                 new FenBoardDeserializer(),
                 new UciMoveDeserializer(),
-                new FenBoardSerializer()
+                new FenBoardSerializer(),
+                new ChessMoveValidator()
         );
     }
 
@@ -46,5 +48,16 @@ public class MovePieceUseCaseTest {
 
         // En la fila 8 desaparece el caballo en g8 (rnbqkb1r) y en la fila 6 aparece en f6 (5n2)
         assertThat(resultFen).isEqualTo("rnbqkb1r/pppppppp/5n2/8/4P3/8/PPPP1PPP/RNBQKBNR");
+    }
+
+    @Test
+    @DisplayName("No debe modificar el tablero si el movimiento es invalido")
+    void shouldKeepBoardUnchangedWhenMoveIsInvalid() {
+        String initialFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+        String illegalMove = "e2e5";
+
+        String resultFen = useCase.execute(new Input(initialFen, illegalMove));
+
+        assertThat(resultFen).isEqualTo(initialFen);
     }
 }

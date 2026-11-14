@@ -33,7 +33,7 @@ public class Main {
 
         // 2. Casos de uso (Pure DI)
         GetInitialBoardUseCase getInitialBoardUseCase = new GetInitialBoardUseCase(boardSerializer);
-        MovePieceUseCase movePieceUseCase = new MovePieceUseCase(boardDeserializer, moveDeserializer, boardSerializer);
+        MovePieceUseCase movePieceUseCase = new MovePieceUseCase(boardDeserializer, moveDeserializer, boardSerializer, moveValidator);
         GetAvailableMovesUseCase getAvailableMovesUseCase = new GetAvailableMovesUseCase(
                 positionSerializer, positionDeserializer, moveValidator, boardDeserializer
         );
