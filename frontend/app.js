@@ -15,6 +15,7 @@ class ChessGameClient {
 
         this.currentFen = '';
         this.selectedSquare = null;
+        this.availableMoves = new Set();
 
         this.init();
     }
@@ -29,10 +30,26 @@ class ChessGameClient {
             const response = await fetch('/api/board/initial');
             this.currentFen = await response.text();
             this.selectedSquare = null;
+            this.availableMoves.clear();
             this.updateUi();
+            this.turnIndicator.textContent = 'Listo para jugar';
         } catch (error) {
             console.error('Error fetching initial board:', error);
             this.turnIndicator.textContent = 'Error conectando con el backend';
+        }
+    }
+
+    async fetchAvailableMoves(squareName) {
+        const url = `/api/board/moves?board=${encodeURIComponent(this.currentFen)}&square=${encodeURIComponent(squareName)}`;
+        try {
+            const response = await fetch(url);
+            const moves = await response.json();
+            this.availableMoves = new Set(Array.isArray(moves) ? moves : []);
+            this.renderBoard();
+        } catch (error) {
+            console.error('Error fetching available moves:', error);
+            this.availableMoves.clear();
+            this.renderBoard();
         }
     }
 
@@ -43,10 +60,14 @@ class ChessGameClient {
         try {
             const response = await fetch(url);
             const newFen = await response.text();
+            const moved = newFen !== this.currentFen;
             this.currentFen = newFen;
             this.selectedSquare = null;
+            this.availableMoves.clear();
             this.updateUi();
-            this.turnIndicator.textContent = `Movimiento realizado: ${uciMove}`;
+            this.turnIndicator.textContent = moved
+                ? `Movimiento realizado: ${uciMove}`
+                : `Movimiento inválido: ${uciMove}`;
         } catch (error) {
             console.error('Error applying move:', error);
             this.turnIndicator.textContent = 'Error al enviar jugada';
@@ -77,6 +98,9 @@ class ChessGameClient {
                 if (this.selectedSquare === squareName) {
                     squareDiv.classList.add('selected');
                 }
+                if (this.availableMoves.has(squareName)) {
+                    squareDiv.classList.add(piece ? 'available-capture' : 'available-move');
+                }
 
                 if (piece) {
                     squareDiv.textContent = PIECE_SYMBOLS[piece] || piece;
@@ -95,12 +119,14 @@ class ChessGameClient {
                 this.selectedSquare = squareName;
                 this.turnIndicator.textContent = `Casilla origen: ${squareName}. Selecciona destino`;
                 this.renderBoard();
+                this.fetchAvailableMoves(squareName);
             }
         } else {
             // Segundo clic: destino
             if (this.selectedSquare === squareName) {
                 // Deseleccionar al hacer clic en la misma
                 this.selectedSquare = null;
+                this.availableMoves.clear();
                 this.turnIndicator.textContent = 'Selección cancelada';
                 this.renderBoard();
             } else {

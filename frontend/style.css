@@ -68,6 +68,7 @@ header h1 {
 }
 
 .square {
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -75,6 +76,24 @@ header h1 {
     user-select: none;
     cursor: pointer;
     transition: background-color 0.15s ease;
+}
+
+.square.available-move::after {
+    content: '';
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(20, 20, 20, 0.28);
+    pointer-events: none;
+}
+
+.square.available-capture::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border-radius: 50%;
+    border: 4px solid rgba(20, 20, 20, 0.35);
+    pointer-events: none;
 }
 
 .square.light {
