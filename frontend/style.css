@@ -104,6 +104,40 @@ header h1 {
     background-color: var(--dark-square);
 }
 
+.square .piece {
+    line-height: 1;
+    pointer-events: none;
+}
+
+.square .coord-rank,
+.square .coord-file {
+    position: absolute;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.square .coord-rank {
+    top: 3px;
+    left: 4px;
+}
+
+.square .coord-file {
+    bottom: 3px;
+    right: 4px;
+}
+
+.square.light .coord-rank,
+.square.light .coord-file {
+    color: var(--dark-square);
+}
+
+.square.dark .coord-rank,
+.square.dark .coord-file {
+    color: var(--light-square);
+}
+
 .square.selected {
     background-color: var(--selected-square) !important;
     outline: 3px solid var(--highlight-border);

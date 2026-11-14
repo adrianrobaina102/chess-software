@@ -103,7 +103,24 @@ class ChessGameClient {
                 }
 
                 if (piece) {
-                    squareDiv.textContent = PIECE_SYMBOLS[piece] || piece;
+                    const pieceSpan = document.createElement('span');
+                    pieceSpan.className = 'piece';
+                    pieceSpan.textContent = PIECE_SYMBOLS[piece] || piece;
+                    squareDiv.appendChild(pieceSpan);
+                }
+
+                if (col === 0) {
+                    const rankLabel = document.createElement('span');
+                    rankLabel.className = 'coord-rank';
+                    rankLabel.textContent = rank;
+                    squareDiv.appendChild(rankLabel);
+                }
+
+                if (row === 7) {
+                    const fileLabel = document.createElement('span');
+                    fileLabel.className = 'coord-file';
+                    fileLabel.textContent = file;
+                    squareDiv.appendChild(fileLabel);
                 }
 
                 squareDiv.addEventListener('click', () => this.onSquareClicked(squareName, piece));
