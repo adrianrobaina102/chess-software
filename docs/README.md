@@ -12,6 +12,7 @@ Bienvenido al centro de documentación técnica del sistema de **Salas para Juga
 | **[`architecture.md`](architecture.md)** | **Arquitectura y Flujos del Sistema**: Diagramas de secuencia y flujos paso a paso (carga de tablero inicial y aplicación de movimientos). |
 | **[`frontend-cycle.md`](frontend-cycle.md)** | **Ciclo de Frontend y Concurrencia**: Diagrama de secuencia del cliente SPA interactivo en JavaScript. |
 | **[`agent.md`](agent.md)** | **Reglas del Agente y Protocolo de Vigilancia Proactiva**: Filosofía de trabajo, GitFlow, estándares de calidad, Pure DI y rubric checks. |
+| **[`roadmap.md`](roadmap.md)** | **Roadmap y Tareas Pendientes**: Estado actual del proyecto, tareas restantes por área, dificultad estimada y orden recomendado. |
 
 ---
 
