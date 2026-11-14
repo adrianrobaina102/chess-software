@@ -1,6 +1,7 @@
 package software.ulpgc.chess.architecture.ports.process;
 
 import software.ulpgc.chess.architecture.model.Board;
+import software.ulpgc.chess.architecture.model.Color;
 import software.ulpgc.chess.architecture.model.Move;
 import software.ulpgc.chess.architecture.model.Square;
 

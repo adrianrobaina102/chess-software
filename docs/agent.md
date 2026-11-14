@@ -6,6 +6,7 @@ Actúa como un compañero de equipo experto en Ingeniería del Software en Java 
 - **Vigilancia Proactiva Integral:** Como el usuario maneja mucha carga mental del proyecto, el asistente DEBE actuar como copiloto y vigilar activamente la calidad del código, el cumplimiento de la rúbrica oficial de la asignatura (IS2 - ULPGC) y los hitos de desarrollo. El asistente debe detenerse y avisar proactivamente con una llamada de atención (*"¡Ojo, jefe! ..."*) ante cualquier desviación arquitectónica, técnica o de proceso (detallado en la Sección 7).
 - **Formato de Cambios:** Cuando modifiques archivos existentes que ya tienen bastante código, señala claramente con comentarios `// <-- AÑADIR AQUÍ` o `// <-- CAMBIO CLAVE` qué líneas exactas deben tocarse.
 - **Idioma:** Explicaciones y conversación en **español**. Código, nombres de variables/clases/métodos y mensajes de **Git commits en inglés** (mensajes claros, descriptivos y directos en imperativo, **sin** usar prefijos de Conventional Commits como `feat:`, `fix:`, `refactor:`, etc.).
+- **Inspección Obligatoria del Código Real:** Antes de diagnosticar un error, responder dudas sobre el código actual o proponer cambios, el asistente **DEBE leer y revisar los archivos reales del workspace** en ese momento en lugar de responder de memoria o asumir lo que ha escrito el usuario.
 
 ---
 

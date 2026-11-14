@@ -15,7 +15,9 @@ import software.ulpgc.chess.architecture.ports.process.MoveValidator;
 import software.ulpgc.chess.infrastructure.adapters.in.*;
 import software.ulpgc.chess.infrastructure.adapters.out.AlgebraicPositionSerializer;
 import software.ulpgc.chess.infrastructure.adapters.out.FenBoardSerializer;
+import software.ulpgc.chess.infrastructure.adapters.process.CheckDetector;
 import software.ulpgc.chess.infrastructure.adapters.process.ChessMoveValidator;
+import software.ulpgc.chess.infrastructure.adapters.process.PseudoLegalMoveValidator;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,7 +30,9 @@ public class Main {
         MoveDeserializer moveDeserializer = new UciMoveDeserializer();
         PositionSerializer positionSerializer = new AlgebraicPositionSerializer();
         PositionDeserializer positionDeserializer = new AlgebraicPositionDeserializer();
-        MoveValidator moveValidator = new ChessMoveValidator();
+        MoveValidator pseudoLegalValidator = new PseudoLegalMoveValidator();
+        CheckDetector checkDetector = new CheckDetector(pseudoLegalValidator);
+        MoveValidator moveValidator = new ChessMoveValidator(pseudoLegalValidator, checkDetector);
         Gson gson = new Gson();
 
         // 2. Casos de uso (Pure DI)

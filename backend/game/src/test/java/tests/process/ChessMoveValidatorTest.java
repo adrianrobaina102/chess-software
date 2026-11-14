@@ -5,7 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import software.ulpgc.chess.architecture.model.Board;
 import software.ulpgc.chess.architecture.model.Move;
-import software.ulpgc.chess.architecture.model.Square;
 import software.ulpgc.chess.architecture.ports.process.MoveValidator;
 import software.ulpgc.chess.infrastructure.adapters.process.ChessMoveValidator;
 
@@ -106,7 +105,7 @@ public class ChessMoveValidatorTest {
     }
 
     @Test
-    @DisplayName("Debe permitir al rey moverse una casilla salvo casillas con piezas propias")
+    @DisplayName("Debe permitir al rey moverse una casilla salvo casillas con piezas propias o amenazadas")
     void shouldValidateKingSingleStepMoves() {
         Board board = new Board(Map.of(
                 at("e1"), WhiteKing,
@@ -116,7 +115,7 @@ public class ChessMoveValidatorTest {
         ));
 
         assertThat(validator.validMoves(board, at("e1")))
-                .containsExactlyInAnyOrder(at("e2"), at("f2"), at("f1"));
+                .containsExactlyInAnyOrder(at("e2"), at("f2"));
     }
 
     @Test
@@ -176,5 +175,47 @@ public class ChessMoveValidatorTest {
 
         assertThat(validator.validMoves(board, at("e7")))
                 .containsExactlyInAnyOrder(at("e6"), at("e5"), at("f6"));
+    }
+
+    @Test
+    @DisplayName("No debe permitir al rey moverse a una casilla amenazada por una pieza rival")
+    void shouldNotAllowKingToMoveIntoCheck() {
+        Board board = new Board(Map.of(
+                at("e1"), WhiteKing,
+                at("f8"), BlackRook
+        ));
+
+        assertThat(validator.validMoves(board, at("e1")))
+                .containsExactlyInAnyOrder(at("d1"), at("d2"), at("e2"));
+        assertThat(validator.isValid(board, new Move(at("e1"), at("f1")))).isFalse();
+    }
+
+    @Test
+    @DisplayName("No debe permitir mover una pieza clavada si expone a su propio rey al jaque")
+    void shouldRestrictPinnedPieceToPinLine() {
+        Board board = new Board(Map.of(
+                at("e1"), WhiteKing,
+                at("e2"), WhiteRook,
+                at("e8"), BlackRook
+        ));
+
+        assertThat(validator.validMoves(board, at("e2")))
+                .containsExactlyInAnyOrder(at("e3"), at("e4"), at("e5"), at("e6"), at("e7"), at("e8"));
+        assertThat(validator.isValid(board, new Move(at("e2"), at("d2")))).isFalse();
+    }
+
+    @Test
+    @DisplayName("Cuando el rey esta en jaque solo debe permitir jugadas que eviten el jaque")
+    void shouldOnlyAllowMovesThatResolveCheck() {
+        Board board = new Board(Map.of(
+                at("e1"), WhiteKing,
+                at("d2"), WhiteRook,
+                at("a1"), WhitePawn,
+                at("e8"), BlackRook
+        ));
+
+        assertThat(validator.validMoves(board, at("a1"))).isEmpty();
+        assertThat(validator.validMoves(board, at("d2")))
+                .containsExactlyInAnyOrder(at("e2"));
     }
 }
