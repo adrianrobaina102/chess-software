@@ -1,8 +1,8 @@
 package software.ulpgc.chess.infrastructure.adapters.in;
 
-import software.ulpgc.chess.architecture.model.Board;
-import software.ulpgc.chess.architecture.model.Piece;
-import software.ulpgc.chess.architecture.model.Square;
+import software.ulpgc.chess.architecture.model.board.Board;
+import software.ulpgc.chess.architecture.model.board.Piece;
+import software.ulpgc.chess.architecture.model.board.Square;
 import software.ulpgc.chess.architecture.ports.in.BoardDeserializer;
 
 import java.util.HashMap;

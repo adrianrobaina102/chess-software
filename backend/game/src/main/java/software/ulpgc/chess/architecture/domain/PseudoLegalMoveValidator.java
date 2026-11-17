@@ -1,15 +1,14 @@
 package software.ulpgc.chess.architecture.domain;
 
-import software.ulpgc.chess.architecture.model.*;
-import software.ulpgc.chess.architecture.domain.MoveValidator;
 import software.ulpgc.chess.architecture.domain.rules.PathGenerator;
 import software.ulpgc.chess.architecture.domain.rules.*;
+import software.ulpgc.chess.architecture.model.board.*;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static software.ulpgc.chess.architecture.model.Piece.*;
+import static software.ulpgc.chess.architecture.model.board.Piece.*;
 
 public class PseudoLegalMoveValidator implements MoveValidator {
     private final Map<Piece, PieceRule> pieceRules;

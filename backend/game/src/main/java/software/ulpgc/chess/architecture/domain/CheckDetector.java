@@ -1,9 +1,8 @@
 package software.ulpgc.chess.architecture.domain;
 
-import software.ulpgc.chess.architecture.model.Board;
-import software.ulpgc.chess.architecture.model.Color;
-import software.ulpgc.chess.architecture.model.Square;
-import software.ulpgc.chess.architecture.domain.MoveValidator;
+import software.ulpgc.chess.architecture.model.board.Board;
+import software.ulpgc.chess.architecture.model.board.Color;
+import software.ulpgc.chess.architecture.model.board.Square;
 
 import java.util.Map;
 import java.util.Optional;

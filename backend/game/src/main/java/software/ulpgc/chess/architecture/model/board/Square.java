@@ -1,4 +1,4 @@
-package software.ulpgc.chess.architecture.model;
+package software.ulpgc.chess.architecture.model.board;
 
 public record Square (File file, Rank rank) {
     public static Square at (String notation){

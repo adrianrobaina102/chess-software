@@ -3,16 +3,16 @@ package tests.process;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import software.ulpgc.chess.architecture.model.Board;
-import software.ulpgc.chess.architecture.model.Move;
+import software.ulpgc.chess.architecture.model.board.Board;
+import software.ulpgc.chess.architecture.model.board.Move;
 import software.ulpgc.chess.architecture.domain.MoveValidator;
 import software.ulpgc.chess.architecture.domain.ChessMoveValidator;
 
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static software.ulpgc.chess.architecture.model.Piece.*;
-import static software.ulpgc.chess.architecture.model.Square.at;
+import static software.ulpgc.chess.architecture.model.board.Piece.*;
+import static software.ulpgc.chess.architecture.model.board.Square.at;
 
 public class ChessMoveValidatorTest {
 

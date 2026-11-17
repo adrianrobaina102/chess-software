@@ -1,7 +1,6 @@
 package software.ulpgc.chess.architecture.domain.rules;
 
-import software.ulpgc.chess.architecture.model.Square;
-import software.ulpgc.chess.architecture.domain.rules.PathGenerator;
+import software.ulpgc.chess.architecture.model.board.Square;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,10 +1,9 @@
 package software.ulpgc.chess.architecture.domain;
 
-import software.ulpgc.chess.architecture.model.Board;
-import software.ulpgc.chess.architecture.model.Move;
-import software.ulpgc.chess.architecture.model.Piece;
-import software.ulpgc.chess.architecture.model.Square;
-import software.ulpgc.chess.architecture.domain.MoveValidator;
+import software.ulpgc.chess.architecture.model.board.Board;
+import software.ulpgc.chess.architecture.model.board.Move;
+import software.ulpgc.chess.architecture.model.board.Piece;
+import software.ulpgc.chess.architecture.model.board.Square;
 
 import java.util.List;
 

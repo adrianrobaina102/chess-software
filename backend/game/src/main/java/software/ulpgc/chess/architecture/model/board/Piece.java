@@ -1,9 +1,9 @@
-package software.ulpgc.chess.architecture.model;
+package software.ulpgc.chess.architecture.model.board;
 
 import java.util.Arrays;
 
-import static software.ulpgc.chess.architecture.model.Color.Black;
-import static software.ulpgc.chess.architecture.model.Color.White;
+import static software.ulpgc.chess.architecture.model.board.Color.Black;
+import static software.ulpgc.chess.architecture.model.board.Color.White;
 
 public enum Piece {
     WhitePawn('P'),

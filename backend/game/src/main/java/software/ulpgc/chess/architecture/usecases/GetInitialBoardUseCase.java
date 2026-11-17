@@ -1,6 +1,6 @@
 package software.ulpgc.chess.architecture.usecases;
 
-import software.ulpgc.chess.architecture.model.Board;
+import software.ulpgc.chess.architecture.model.board.Board;
 import software.ulpgc.chess.architecture.ports.out.BoardSerializer;
 
 public class GetInitialBoardUseCase implements UseCase<Void, String> {

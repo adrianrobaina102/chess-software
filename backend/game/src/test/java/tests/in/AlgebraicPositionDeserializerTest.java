@@ -1,9 +1,9 @@
 package tests.in;
 
 import org.junit.jupiter.api.Test;
-import software.ulpgc.chess.architecture.model.File;
-import software.ulpgc.chess.architecture.model.Rank;
-import software.ulpgc.chess.architecture.model.Square;
+import software.ulpgc.chess.architecture.model.board.File;
+import software.ulpgc.chess.architecture.model.board.Rank;
+import software.ulpgc.chess.architecture.model.board.Square;
 import software.ulpgc.chess.infrastructure.adapters.in.AlgebraicPositionDeserializer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

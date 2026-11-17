@@ -1,6 +1,6 @@
 package software.ulpgc.chess.architecture.ports.in;
 
-import software.ulpgc.chess.architecture.model.Square;
+import software.ulpgc.chess.architecture.model.board.Square;
 
 public interface PositionDeserializer {
     Square deserialize(String notation);
