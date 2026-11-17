@@ -1,4 +1,4 @@
-package software.ulpgc.chess.architecture.domain;
+package software.ulpgc.chess.architecture.usecases;
 
 import software.ulpgc.chess.architecture.model.Board;
 import software.ulpgc.chess.architecture.ports.out.BoardSerializer;

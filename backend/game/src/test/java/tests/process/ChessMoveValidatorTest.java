@@ -5,8 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import software.ulpgc.chess.architecture.model.Board;
 import software.ulpgc.chess.architecture.model.Move;
-import software.ulpgc.chess.architecture.ports.process.MoveValidator;
-import software.ulpgc.chess.infrastructure.adapters.process.ChessMoveValidator;
+import software.ulpgc.chess.architecture.domain.MoveValidator;
+import software.ulpgc.chess.architecture.domain.ChessMoveValidator;
 
 import java.util.Map;
 

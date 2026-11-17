@@ -1,4 +1,4 @@
-package software.ulpgc.chess.architecture.ports.process;
+package software.ulpgc.chess.architecture.domain;
 
 import software.ulpgc.chess.architecture.model.Board;
 import software.ulpgc.chess.architecture.model.Color;

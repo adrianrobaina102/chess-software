@@ -1,11 +1,11 @@
-package software.ulpgc.chess.architecture.domain;
+package software.ulpgc.chess.architecture.usecases;
 
 import software.ulpgc.chess.architecture.model.Board;
 import software.ulpgc.chess.architecture.model.Move;
 import software.ulpgc.chess.architecture.ports.in.BoardDeserializer;
 import software.ulpgc.chess.architecture.ports.in.MoveDeserializer;
 import software.ulpgc.chess.architecture.ports.out.BoardSerializer;
-import software.ulpgc.chess.architecture.ports.process.MoveValidator;
+import software.ulpgc.chess.architecture.domain.MoveValidator;
 
 public class MovePieceUseCase implements UseCase<MovePieceUseCase.Input, String> {
 

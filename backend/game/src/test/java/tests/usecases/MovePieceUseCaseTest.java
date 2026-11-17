@@ -3,12 +3,12 @@ package tests.usecases;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import software.ulpgc.chess.architecture.domain.MovePieceUseCase;
-import software.ulpgc.chess.architecture.domain.MovePieceUseCase.Input;
+import software.ulpgc.chess.architecture.usecases.MovePieceUseCase;
+import software.ulpgc.chess.architecture.usecases.MovePieceUseCase.Input;
 import software.ulpgc.chess.infrastructure.adapters.in.FenBoardDeserializer;
 import software.ulpgc.chess.infrastructure.adapters.out.FenBoardSerializer;
 import software.ulpgc.chess.infrastructure.adapters.in.UciMoveDeserializer;
-import software.ulpgc.chess.infrastructure.adapters.process.ChessMoveValidator;
+import software.ulpgc.chess.architecture.domain.ChessMoveValidator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

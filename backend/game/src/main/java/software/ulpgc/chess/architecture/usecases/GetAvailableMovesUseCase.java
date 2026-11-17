@@ -1,11 +1,11 @@
-package software.ulpgc.chess.architecture.domain;
+package software.ulpgc.chess.architecture.usecases;
 
 import software.ulpgc.chess.architecture.model.Board;
 import software.ulpgc.chess.architecture.model.Square;
 import software.ulpgc.chess.architecture.ports.in.BoardDeserializer;
 import software.ulpgc.chess.architecture.ports.in.PositionDeserializer;
 import software.ulpgc.chess.architecture.ports.out.PositionSerializer;
-import software.ulpgc.chess.architecture.ports.process.MoveValidator;
+import software.ulpgc.chess.architecture.domain.MoveValidator;
 
 import java.util.List;
 

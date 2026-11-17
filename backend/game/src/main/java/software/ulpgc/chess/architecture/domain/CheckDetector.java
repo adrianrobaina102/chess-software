@@ -1,9 +1,9 @@
-package software.ulpgc.chess.infrastructure.adapters.process;
+package software.ulpgc.chess.architecture.domain;
 
 import software.ulpgc.chess.architecture.model.Board;
 import software.ulpgc.chess.architecture.model.Color;
 import software.ulpgc.chess.architecture.model.Square;
-import software.ulpgc.chess.architecture.ports.process.MoveValidator;
+import software.ulpgc.chess.architecture.domain.MoveValidator;
 
 import java.util.Map;
 import java.util.Optional;

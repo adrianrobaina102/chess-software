@@ -1,4 +1,4 @@
-package software.ulpgc.chess.architecture.rules;
+package software.ulpgc.chess.architecture.domain.rules;
 
 import software.ulpgc.chess.architecture.model.Square;
 

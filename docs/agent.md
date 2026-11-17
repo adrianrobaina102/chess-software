@@ -19,50 +19,61 @@ Dentro de cada módulo del backend (ej. `backend/game`), el sistema sigue **Arqu
 ```text
 backend/game/src/main/java/software/ulpgc/chess/
 │
-├── architecture/                        <-- Core (Reglas del juego, puro e inmutable)
-│   ├── domain/                          <-- Casos de uso
-│   │   ├── UseCase
-│   │   ├── GetInitialBoardUseCase
-│   │   └── MovePieceUseCase
-│   │
-│   ├── model/                           <-- Entidades y objetos de valor
+├── architecture/                        <-- Core (Puro, inmutable y sin dependencias externas)
+│   ├── model/                           <-- Entidades y objetos de valor (el QUÉ / estado)
 │   │   ├── Board, Move, Square, State
 │   │   └── Color, File, Piece, Rank
 │   │
-│   ├── rules/                           <-- Reglas de movimiento por pieza
-│   │   ├── PieceRule
-│   │   └── RookRule, BishopRule, KnightRule, QueenRule, KingRule, PawnRule
+│   ├── domain/                          <-- Reglas e inteligencia pura del negocio (el CÓMO)
+│   │   ├── MoveValidator, ChessMoveValidator, PseudoLegalMoveValidator, CheckDetector
+│   │   └── rules/                       <-- Reglas geométricas por pieza y generadores de camino
+│   │       ├── PieceRule, PathGenerator, SlidingPathGenerator, SingleStepPathGenerator
+│   │       └── RookRule, BishopRule, QueenRule, KingRule, KnightRule, PawnRule
 │   │
-│   └── ports/                           <-- Contratos de entrada y salida (ISP extremo)
+│   ├── usecases/                        <-- Acciones del sistema / orquestación de aplicación
+│   │   ├── UseCase
+│   │   ├── GetInitialBoardUseCase
+│   │   ├── MovePieceUseCase
+│   │   └── GetAvailableMovesUseCase
+│   │
+│   └── ports/                           <-- Contratos con el exterior (ISP extremo)
 │       ├── in/                          <-- Puertos de entrada (lectura / deserializadores)
 │       │   ├── BoardDeserializer
 │       │   ├── MoveDeserializer
 │       │   ├── PositionDeserializer
 │       │   └── StateDeserializer
 │       │
-│       └── out/                         <-- Puertos de salida (escritura / serializadores)
+│       └── out/                         <-- Puertos de salida (escritura / serializadores / stores)
 │           ├── BoardSerializer
 │           ├── MoveSerializer
 │           └── PositionSerializer
 │
-├── infrastructure/                      <-- Exterior (Traducción y comunicación)
+├── infrastructure/                      <-- Exterior (HTTP/Javalin, formatos FEN/UCI, BD)
 │   └── adapters/
-│       ├── in/                          <-- Adaptadores de entrada (Javalin EndPoints y Deserializadores)
+│       ├── in/                          <-- Adaptadores de entrada (EndPoints Javalin y Deserializadores)
 │       │   ├── EndPoint
 │       │   ├── GetInitialBoardEndPoint
 │       │   ├── MovePieceEndPoint
+│       │   ├── GetAvailableMovesEndPoint
 │       │   ├── AlgebraicPositionDeserializer
 │       │   ├── FenBoardDeserializer
 │       │   ├── FenStateDeserializer
 │       │   └── UciMoveDeserializer
 │       │
-│       └── out/                         <-- Adaptadores de salida (Serializadores)
+│       └── out/                         <-- Adaptadores de salida (Serializadores y persistencia)
 │           ├── AlgebraicPositionSerializer
 │           ├── FenBoardSerializer
 │           └── UciMoveSerializer
 │
 └── Main.java                            <-- Composition root / cableado de dependencias
 ```
+
+### Criterio Estricto de Ubicación (Core vs Exterior)
+- **`architecture/model/`:** Solo entidades y objetos de valor inmutables (*sustantivos / estado*: `Board`, `Square`, `Move`, `State`...).
+- **`architecture/domain/`:** Toda la lógica y reglas puras del negocio (*el cómo*: validadores, detectores de jaque, reglas de movimiento, generadores de caminos). **Prohibido** meter aquí llamadas HTTP, BD o formatos externos, y **prohibido** meter lógica pura del negocio en `infrastructure/`.
+- **`architecture/usecases/`:** Acciones del sistema que orquestan `ports`, `domain` y `model`. Nunca deben ir dentro de `domain/`.
+- **`architecture/ports/`:** Únicamente interfaces que conectan con el exterior (`in/` lectura/entrada, `out/` escritura/salida/persistencia).
+- **`infrastructure/adapters/`:** Únicamente tecnología y traducción externa (Javalin, Gson, FEN, UCI, SQLite/MySQL/File).
 
 Y en el bloque de pruebas:
 ```text

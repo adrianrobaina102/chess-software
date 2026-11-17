@@ -1,7 +1,8 @@
-package software.ulpgc.chess.architecture.rules;
+package software.ulpgc.chess.architecture.domain.rules;
 
 import software.ulpgc.chess.architecture.model.Color;
 import software.ulpgc.chess.architecture.model.Square;
+import software.ulpgc.chess.architecture.domain.rules.PathGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,9 +10,10 @@ import java.util.List;
 public class PawnRule implements PieceRule {
     private final Color color;
     private final int[][] directions;
-
-    public PawnRule(Color color) {
+    private final PathGenerator generator;
+    public PawnRule(Color color, PathGenerator generator) {
         this.color = color;
+        this.generator = generator;
         int step = (color == Color.White) ? 1 : -1;
         this.directions = new int[][] {
                 {0, step},
@@ -25,22 +27,9 @@ public class PawnRule implements PieceRule {
     public List<List<Square>> possibleMoves(Square from) {
         List<List<Square>> paths = new ArrayList<>();
         for (int[] direction : directions) {
-            paths.add(generatePath(direction, from));
+            paths.add(generator.generatePath(from, direction));
         }
         return paths;
     }
 
-    private List<Square> generatePath(int[] direction, Square from) {
-        List<Square> path = new ArrayList<>();
-        int file = from.file().ordinal() + 1;
-        int rank = from.rank().symbol();
-
-        int nextFile = file + direction[0];
-        int nextRank = rank + direction[1];
-
-        if (nextFile >= 1 && nextFile <= 8 && nextRank >= 1 && nextRank <= 8) {
-            path.add(Square.of(nextFile, nextRank));
-        }
-        return path;
-    }
 }

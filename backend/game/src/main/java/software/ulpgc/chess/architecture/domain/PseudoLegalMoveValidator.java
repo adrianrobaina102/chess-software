@@ -1,8 +1,9 @@
-package software.ulpgc.chess.infrastructure.adapters.process;
+package software.ulpgc.chess.architecture.domain;
 
 import software.ulpgc.chess.architecture.model.*;
-import software.ulpgc.chess.architecture.ports.process.MoveValidator;
-import software.ulpgc.chess.architecture.rules.*;
+import software.ulpgc.chess.architecture.domain.MoveValidator;
+import software.ulpgc.chess.architecture.domain.rules.PathGenerator;
+import software.ulpgc.chess.architecture.domain.rules.*;
 
 import java.util.List;
 import java.util.Map;
@@ -22,11 +23,13 @@ public class PseudoLegalMoveValidator implements MoveValidator {
     }
 
     private static Map<Piece, PieceRule> initialMap() {
-        PieceRule rookRule = new RookRule();
-        PieceRule knightRule = new KnightRule();
-        PieceRule bishopRule = new BishopRule();
-        PieceRule queenRule = new QueenRule();
-        PieceRule kingRule = new KingRule();
+        PathGenerator singleStep = new SingleStepPathGenerator();
+        PathGenerator sliding  = new SlidingPathGenerator();
+        PieceRule rookRule = new RookRule(sliding);
+        PieceRule bishopRule = new BishopRule(sliding);
+        PieceRule queenRule = new QueenRule(sliding);
+        PieceRule knightRule = new KnightRule(singleStep);
+        PieceRule kingRule = new KingRule(singleStep);
 
         return Map.ofEntries(
                 Map.entry(WhiteRook, rookRule),
@@ -39,8 +42,8 @@ public class PseudoLegalMoveValidator implements MoveValidator {
                 Map.entry(BlackQueen, queenRule),
                 Map.entry(WhiteKing, kingRule),
                 Map.entry(BlackKing, kingRule),
-                Map.entry(WhitePawn, new PawnRule(Color.White)),
-                Map.entry(BlackPawn, new PawnRule(Color.Black))
+                Map.entry(WhitePawn, new PawnRule(Color.White, singleStep)),
+                Map.entry(BlackPawn, new PawnRule(Color.Black, singleStep))
         );
     }
 

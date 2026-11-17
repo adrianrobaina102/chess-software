@@ -3,12 +3,12 @@ package tests.usecases;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import software.ulpgc.chess.architecture.domain.GetAvailableMovesUseCase;
-import software.ulpgc.chess.architecture.domain.GetAvailableMovesUseCase.Input;
+import software.ulpgc.chess.architecture.usecases.GetAvailableMovesUseCase;
+import software.ulpgc.chess.architecture.usecases.GetAvailableMovesUseCase.Input;
 import software.ulpgc.chess.infrastructure.adapters.in.AlgebraicPositionDeserializer;
 import software.ulpgc.chess.infrastructure.adapters.in.FenBoardDeserializer;
 import software.ulpgc.chess.infrastructure.adapters.out.AlgebraicPositionSerializer;
-import software.ulpgc.chess.infrastructure.adapters.process.ChessMoveValidator;
+import software.ulpgc.chess.architecture.domain.ChessMoveValidator;
 
 import java.util.List;
 

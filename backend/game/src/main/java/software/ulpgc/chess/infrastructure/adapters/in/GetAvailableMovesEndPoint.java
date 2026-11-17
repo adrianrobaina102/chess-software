@@ -2,7 +2,7 @@ package software.ulpgc.chess.infrastructure.adapters.in;
 
 import com.google.gson.Gson;
 import io.javalin.http.Context;
-import software.ulpgc.chess.architecture.domain.GetAvailableMovesUseCase;
+import software.ulpgc.chess.architecture.usecases.GetAvailableMovesUseCase;
 
 public class GetAvailableMovesEndPoint implements EndPoint {
 
