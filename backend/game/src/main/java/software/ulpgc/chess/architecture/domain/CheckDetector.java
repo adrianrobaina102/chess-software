@@ -20,7 +20,7 @@ public class CheckDetector {
                 .orElse(false);
     }
 
-    private Optional<Square> findKingSquare(Board board, Color color) {
+    public Optional<Square> findKingSquare(Board board, Color color) {
         return board.pieces().entrySet().stream()
                 .filter(entry -> entry.getValue().color() == color && entry.getValue().isKing())
                 .map(Map.Entry::getKey)
