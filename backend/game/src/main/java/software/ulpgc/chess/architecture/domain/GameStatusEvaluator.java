@@ -5,6 +5,7 @@ import software.ulpgc.chess.architecture.model.GameStatus;
 import software.ulpgc.chess.architecture.model.board.Board;
 import software.ulpgc.chess.architecture.model.board.Color;
 
+
 public class GameStatusEvaluator {
     private final MoveValidator moveValidator;
     private final CheckDetector checkDetector;
