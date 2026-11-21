@@ -3,12 +3,14 @@ package tests.usecases;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import software.ulpgc.chess.architecture.domain.ChessMoveValidator;
 import software.ulpgc.chess.architecture.usecases.GetAvailableMovesUseCase;
 import software.ulpgc.chess.architecture.usecases.GetAvailableMovesUseCase.Input;
 import software.ulpgc.chess.infrastructure.adapters.in.AlgebraicPositionDeserializer;
 import software.ulpgc.chess.infrastructure.adapters.in.FenBoardDeserializer;
+import software.ulpgc.chess.infrastructure.adapters.in.FenGamePositionDeserializer;
+import software.ulpgc.chess.infrastructure.adapters.in.FenStateDeserializer;
 import software.ulpgc.chess.infrastructure.adapters.out.AlgebraicPositionSerializer;
-import software.ulpgc.chess.architecture.domain.ChessMoveValidator;
 
 import java.util.List;
 
@@ -24,14 +26,14 @@ public class GetAvailableMovesUseCaseTest {
                 new AlgebraicPositionSerializer(),
                 new AlgebraicPositionDeserializer(),
                 new ChessMoveValidator(),
-                new FenBoardDeserializer()
+                new FenGamePositionDeserializer(new FenBoardDeserializer(), new FenStateDeserializer())
         );
     }
 
     @Test
     @DisplayName("Debe devolver e3 y e4 para el peon blanco en e2 desde la posicion inicial")
     void shouldReturnAvailableMovesForInitialWhitePawn() {
-        String initialFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+        String initialFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq";
 
         List<String> moves = useCase.execute(new Input(initialFen, "e2"));
 
@@ -41,7 +43,7 @@ public class GetAvailableMovesUseCaseTest {
     @Test
     @DisplayName("Debe devolver f3 y h3 para el caballo blanco en g1 desde la posicion inicial")
     void shouldReturnAvailableMovesForInitialWhiteKnight() {
-        String initialFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+        String initialFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq";
 
         List<String> moves = useCase.execute(new Input(initialFen, "g1"));
 
@@ -51,9 +53,19 @@ public class GetAvailableMovesUseCaseTest {
     @Test
     @DisplayName("Debe devolver lista vacia cuando la casilla consultada esta vacia")
     void shouldReturnEmptyListWhenSquareIsEmpty() {
-        String initialFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+        String initialFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq";
 
         List<String> moves = useCase.execute(new Input(initialFen, "e4"));
+
+        assertThat(moves).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Debe devolver lista vacia al consultar una pieza rival fuera de turno")
+    void shouldReturnEmptyListForOpponentPieceOutOfTurn() {
+        String initialFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq";
+
+        List<String> moves = useCase.execute(new Input(initialFen, "e7"));
 
         assertThat(moves).isEmpty();
     }
