@@ -1,6 +1,6 @@
-// Mapeo de caracteres FEN a símbolos Unicode de ajedrez
+// Mapeo de caracteres FEN a símbolos Unicode sólidos para diferenciar mejor blancas y negras
 const PIECE_SYMBOLS = {
-    'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
+    'K': '♚', 'Q': '♛', 'R': '♜', 'B': '♝', 'N': '♞', 'P': '♟',
     'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
 };
 
@@ -126,7 +126,8 @@ class ChessGameClient {
 
                 if (piece) {
                     const pieceSpan = document.createElement('span');
-                    pieceSpan.className = 'piece';
+                    const pieceColorClass = piece === piece.toUpperCase() ? 'white' : 'black';
+                    pieceSpan.className = `piece ${pieceColorClass}`;
                     pieceSpan.textContent = PIECE_SYMBOLS[piece] || piece;
                     squareDiv.appendChild(pieceSpan);
                 }
