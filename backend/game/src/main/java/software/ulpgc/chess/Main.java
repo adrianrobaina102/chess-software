@@ -54,7 +54,9 @@ public class Main {
         GetAvailableMovesUseCase getAvailableMovesUseCase = new GetAvailableMovesUseCase(
                 positionSerializer, positionDeserializer, moveValidator, gamePositionDeserializer
         );
-        GetGameStatusUseCase getGameStatusUseCase = new GetGameStatusUseCase(gamePositionDeserializer, gameStatusEvaluator);
+        GetGameStatusUseCase getGameStatusUseCase = new GetGameStatusUseCase(
+                gamePositionDeserializer, gameStatusEvaluator, checkDetector, positionSerializer
+        );
 
         // 3. Servidor Javalin configurado para servir el frontend estÃƒÂ¡tico
         String frontendPath = resolveFrontendPath();
