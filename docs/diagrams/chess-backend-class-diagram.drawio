@@ -244,6 +244,16 @@
           <mxGeometry height="38" width="220" y="48" as="geometry" />
         </mxCell>
 
+        <mxCell id="port-gs" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;div&gt;GameStore&lt;/div&gt;" vertex="1">
+          <mxGeometry height="104" width="250" x="1060" y="950" as="geometry" />
+        </mxCell>
+        <mxCell id="port-gs-sep" parent="port-gs" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;labelPerimeter=1;" value="" vertex="1">
+          <mxGeometry height="8" width="250" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="port-gs-m" parent="port-gs" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="+ save(id: String, position: GamePosition): void&lt;div&gt;+ load(id: String): Optional&amp;lt;GamePosition&amp;gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="56" width="250" y="48" as="geometry" />
+        </mxCell>
+
         <!-- ==================== USECASES ==================== -->
         <mxCell id="uc-gib" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="GetInitialBoardUseCase" vertex="1">
           <mxGeometry height="56" width="200" x="350" y="630" as="geometry" />
