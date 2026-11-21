@@ -17,6 +17,7 @@ class ChessGameClient {
         this.selectedSquare = null;
         this.availableMoves = new Set();
         this.gameStatus = 'Playing';
+        this.checkedKingSquare = null;
 
         this.init();
     }
@@ -33,6 +34,7 @@ class ChessGameClient {
             this.selectedSquare = null;
             this.availableMoves.clear();
             this.gameStatus = 'Playing';
+            this.checkedKingSquare = null;
             this.updateUi();
             this.turnIndicator.textContent = `Turno: ${this.currentTurnLabel()}`;
         } catch (error) {
@@ -45,11 +47,13 @@ class ChessGameClient {
         const url = `/api/board/status?board=${encodeURIComponent(this.currentFen)}`;
         try {
             const response = await fetch(url);
-            const status = await response.json();
-            this.gameStatus = status || 'Playing';
+            const data = await response.json();
+            this.gameStatus = data?.status || 'Playing';
+            this.checkedKingSquare = data?.kingSquare || null;
         } catch (error) {
             console.error('Error fetching game status:', error);
             this.gameStatus = 'Playing';
+            this.checkedKingSquare = null;
         }
     }
 
@@ -116,7 +120,7 @@ class ChessGameClient {
                 if (this.availableMoves.has(squareName)) {
                     squareDiv.classList.add(piece ? 'available-capture' : 'available-move');
                 }
-                if (this.isThreatenedKing(piece)) {
+                if (this.checkedKingSquare === squareName) {
                     squareDiv.classList.add('in-check');
                 }
 
@@ -195,14 +199,6 @@ class ChessGameClient {
 
     isGameOver() {
         return this.gameStatus === 'Checkmate' || this.gameStatus === 'Stalemate';
-    }
-
-    isThreatenedKing(piece) {
-        if (!piece || (this.gameStatus !== 'Check' && this.gameStatus !== 'Checkmate')) {
-            return false;
-        }
-        const expectedKing = this.currentTurnSide() === 'w' ? 'K' : 'k';
-        return piece === expectedKing;
     }
 
     updateStatusMessage(moved, uciMove) {
