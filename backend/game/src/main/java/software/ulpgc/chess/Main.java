@@ -7,14 +7,20 @@ import software.ulpgc.chess.architecture.usecases.GetAvailableMovesUseCase;
 import software.ulpgc.chess.architecture.usecases.GetInitialBoardUseCase;
 import software.ulpgc.chess.architecture.usecases.MovePieceUseCase;
 import software.ulpgc.chess.architecture.ports.in.BoardDeserializer;
+import software.ulpgc.chess.architecture.ports.in.GamePositionDeserializer;
 import software.ulpgc.chess.architecture.ports.in.MoveDeserializer;
 import software.ulpgc.chess.architecture.ports.in.PositionDeserializer;
+import software.ulpgc.chess.architecture.ports.in.StateDeserializer;
 import software.ulpgc.chess.architecture.ports.out.BoardSerializer;
+import software.ulpgc.chess.architecture.ports.out.GamePositionSerializer;
 import software.ulpgc.chess.architecture.ports.out.PositionSerializer;
+import software.ulpgc.chess.architecture.ports.out.StateSerializer;
 import software.ulpgc.chess.architecture.domain.MoveValidator;
 import software.ulpgc.chess.infrastructure.adapters.in.*;
 import software.ulpgc.chess.infrastructure.adapters.out.AlgebraicPositionSerializer;
 import software.ulpgc.chess.infrastructure.adapters.out.FenBoardSerializer;
+import software.ulpgc.chess.infrastructure.adapters.out.FenGamePositionSerializer;
+import software.ulpgc.chess.infrastructure.adapters.out.FenStateSerializer;
 import software.ulpgc.chess.architecture.domain.CheckDetector;
 import software.ulpgc.chess.architecture.domain.ChessMoveValidator;
 import software.ulpgc.chess.architecture.domain.PseudoLegalMoveValidator;
@@ -27,6 +33,10 @@ public class Main {
         // 1. Adaptadores compartidos
         BoardSerializer boardSerializer = new FenBoardSerializer();
         BoardDeserializer boardDeserializer = new FenBoardDeserializer();
+        StateSerializer stateSerializer = new FenStateSerializer();
+        StateDeserializer stateDeserializer = new FenStateDeserializer();
+        GamePositionSerializer gamePositionSerializer = new FenGamePositionSerializer(boardSerializer, stateSerializer);
+        GamePositionDeserializer gamePositionDeserializer = new FenGamePositionDeserializer(boardDeserializer, stateDeserializer);
         MoveDeserializer moveDeserializer = new UciMoveDeserializer();
         PositionSerializer positionSerializer = new AlgebraicPositionSerializer();
         PositionDeserializer positionDeserializer = new AlgebraicPositionDeserializer();
@@ -36,10 +46,10 @@ public class Main {
         Gson gson = new Gson();
 
         // 2. Casos de uso (Pure DI)
-        GetInitialBoardUseCase getInitialBoardUseCase = new GetInitialBoardUseCase(boardSerializer);
-        MovePieceUseCase movePieceUseCase = new MovePieceUseCase(boardDeserializer, moveDeserializer, boardSerializer, moveValidator);
+        GetInitialBoardUseCase getInitialBoardUseCase = new GetInitialBoardUseCase(gamePositionSerializer);
+        MovePieceUseCase movePieceUseCase = new MovePieceUseCase(gamePositionDeserializer, moveDeserializer, gamePositionSerializer, moveValidator);
         GetAvailableMovesUseCase getAvailableMovesUseCase = new GetAvailableMovesUseCase(
-                positionSerializer, positionDeserializer, moveValidator, boardDeserializer
+                positionSerializer, positionDeserializer, moveValidator, gamePositionDeserializer
         );
 
         // 3. Servidor Javalin configurado para servir el frontend estÃƒÂ¡tico
