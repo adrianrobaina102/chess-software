@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
 import software.ulpgc.chess.architecture.usecases.GetAvailableMovesUseCase;
+import software.ulpgc.chess.architecture.usecases.GetGameStatusUseCase;
 import software.ulpgc.chess.architecture.usecases.GetInitialBoardUseCase;
 import software.ulpgc.chess.architecture.usecases.MovePieceUseCase;
 import software.ulpgc.chess.architecture.ports.in.BoardDeserializer;
@@ -23,6 +24,7 @@ import software.ulpgc.chess.infrastructure.adapters.out.FenGamePositionSerialize
 import software.ulpgc.chess.infrastructure.adapters.out.FenStateSerializer;
 import software.ulpgc.chess.architecture.domain.CheckDetector;
 import software.ulpgc.chess.architecture.domain.ChessMoveValidator;
+import software.ulpgc.chess.architecture.domain.GameStatusEvaluator;
 import software.ulpgc.chess.architecture.domain.PseudoLegalMoveValidator;
 
 import java.nio.file.Files;
@@ -43,6 +45,7 @@ public class Main {
         MoveValidator pseudoLegalValidator = new PseudoLegalMoveValidator();
         CheckDetector checkDetector = new CheckDetector(pseudoLegalValidator);
         MoveValidator moveValidator = new ChessMoveValidator(pseudoLegalValidator, checkDetector);
+        GameStatusEvaluator gameStatusEvaluator = new GameStatusEvaluator(moveValidator, checkDetector);
         Gson gson = new Gson();
 
         // 2. Casos de uso (Pure DI)
@@ -51,6 +54,7 @@ public class Main {
         GetAvailableMovesUseCase getAvailableMovesUseCase = new GetAvailableMovesUseCase(
                 positionSerializer, positionDeserializer, moveValidator, gamePositionDeserializer
         );
+        GetGameStatusUseCase getGameStatusUseCase = new GetGameStatusUseCase(gamePositionDeserializer, gameStatusEvaluator);
 
         // 3. Servidor Javalin configurado para servir el frontend estÃƒÂ¡tico
         String frontendPath = resolveFrontendPath();
@@ -69,6 +73,10 @@ public class Main {
 
         app.get("/api/board/moves", context -> {
             new GetAvailableMovesEndPoint(getAvailableMovesUseCase, context, gson).execute();
+        });
+
+        app.get("/api/board/status", context -> {
+            new GetGameStatusEndPoint(gson, getGameStatusUseCase, context).execute();
         });
 
         System.out.println("Servidor iniciado:");
