@@ -32,7 +32,7 @@ class ChessGameClient {
             this.selectedSquare = null;
             this.availableMoves.clear();
             this.updateUi();
-            this.turnIndicator.textContent = 'Listo para jugar';
+            this.turnIndicator.textContent = `Turno: ${this.currentTurnLabel()}`;
         } catch (error) {
             console.error('Error fetching initial board:', error);
             this.turnIndicator.textContent = 'Error conectando con el backend';
@@ -66,8 +66,8 @@ class ChessGameClient {
             this.availableMoves.clear();
             this.updateUi();
             this.turnIndicator.textContent = moved
-                ? `Movimiento realizado: ${uciMove}`
-                : `Movimiento inválido: ${uciMove}`;
+                ? `Movimiento realizado: ${uciMove} · Turno: ${this.currentTurnLabel()}`
+                : `Movimiento inválido: ${uciMove} · Turno: ${this.currentTurnLabel()}`;
         } catch (error) {
             console.error('Error applying move:', error);
             this.turnIndicator.textContent = 'Error al enviar jugada';
@@ -131,10 +131,14 @@ class ChessGameClient {
 
     onSquareClicked(squareName, piece) {
         if (!this.selectedSquare) {
-            // Primer clic: seleccionar casilla de origen si tiene pieza
+            // Primer clic: seleccionar casilla de origen si tiene pieza del turno activo
             if (piece) {
+                if (!this.isCurrentTurnPiece(piece)) {
+                    this.turnIndicator.textContent = `No es su turno · Turno: ${this.currentTurnLabel()}`;
+                    return;
+                }
                 this.selectedSquare = squareName;
-                this.turnIndicator.textContent = `Casilla origen: ${squareName}. Selecciona destino`;
+                this.turnIndicator.textContent = `Casilla origen: ${squareName} · Turno: ${this.currentTurnLabel()}`;
                 this.renderBoard();
                 this.fetchAvailableMoves(squareName);
             }
@@ -144,7 +148,7 @@ class ChessGameClient {
                 // Deseleccionar al hacer clic en la misma
                 this.selectedSquare = null;
                 this.availableMoves.clear();
-                this.turnIndicator.textContent = 'Selección cancelada';
+                this.turnIndicator.textContent = `Selección cancelada · Turno: ${this.currentTurnLabel()}`;
                 this.renderBoard();
             } else {
                 const from = this.selectedSquare;
@@ -152,6 +156,20 @@ class ChessGameClient {
                 this.makeMove(from, to);
             }
         }
+    }
+
+    currentTurnSide() {
+        const side = this.currentFen.split(' ')[1];
+        return side === 'b' ? 'b' : 'w';
+    }
+
+    currentTurnLabel() {
+        return this.currentTurnSide() === 'b' ? 'Negras' : 'Blancas';
+    }
+
+    isCurrentTurnPiece(piece) {
+        const isWhitePiece = piece === piece.toUpperCase();
+        return this.currentTurnSide() === 'w' ? isWhitePiece : !isWhitePiece;
     }
 
     parseFenToMatrix(fen) {
