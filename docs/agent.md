@@ -216,4 +216,8 @@ Para descargar al desarrollador de la fatiga mental y asegurar el cumplimiento d
 
 ### F. Reglas de Diagramas UML (Solo `.jpg` en el repositorio)
 - **Prohibido guardar archivos `.drawio` en el repositorio:** Los diagramas editables (`.drawio`) se mantienen fuera del repo (en Google Drive). En `docs/diagrams/` solo se almacena la imagen exportada en formato **`.jpg`** (ej. `docs/diagrams/chess-backend-class-diagram.jpg`).
+- **Sincronización Obligatoria al Crear o Modificar Clases:** Cada vez que se cree una nueva clase/interfaz/enum/record o se ajuste una clase existente (métodos, atributos o relaciones), el asistente **DEBE actualizar el diagrama UML** (generando el XML actualizado para Draw.io) y recordar al usuario exportar el `.jpg`.
+- **Criterio de Limpieza del Diagrama (Estilo UML del Core):**
+  - No incluir los `adapters` de `infrastructure/` en el diagrama principal de arquitectura (`model`, `domain`, `usecases` y `ports`), para mantenerlo legible y reducido.
+  - No duplicar como atributos internos dentro de una caja las referencias/colaboradores que ya están representados mediante flechas de asociación entre clases.
 - **Obligación de subir `.jpg`:** Cada vez que se modifique el diseño o se genere nuevo XML de Draw.io para el usuario, el asistente **DEBE exigirle** al usuario que exporte y suba la imagen `.jpg` actualizada antes de dar por cerrado el cambio en el diagrama.
