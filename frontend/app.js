@@ -16,6 +16,7 @@ class ChessGameClient {
         this.currentFen = '';
         this.selectedSquare = null;
         this.availableMoves = new Set();
+        this.gameStatus = 'Playing';
 
         this.init();
     }
@@ -31,11 +32,24 @@ class ChessGameClient {
             this.currentFen = await response.text();
             this.selectedSquare = null;
             this.availableMoves.clear();
+            this.gameStatus = 'Playing';
             this.updateUi();
             this.turnIndicator.textContent = `Turno: ${this.currentTurnLabel()}`;
         } catch (error) {
             console.error('Error fetching initial board:', error);
             this.turnIndicator.textContent = 'Error conectando con el backend';
+        }
+    }
+
+    async fetchGameStatus() {
+        const url = `/api/board/status?board=${encodeURIComponent(this.currentFen)}`;
+        try {
+            const response = await fetch(url);
+            const status = await response.json();
+            this.gameStatus = status || 'Playing';
+        } catch (error) {
+            console.error('Error fetching game status:', error);
+            this.gameStatus = 'Playing';
         }
     }
 
@@ -64,10 +78,11 @@ class ChessGameClient {
             this.currentFen = newFen;
             this.selectedSquare = null;
             this.availableMoves.clear();
+            if (moved) {
+                await this.fetchGameStatus();
+            }
             this.updateUi();
-            this.turnIndicator.textContent = moved
-                ? `Movimiento realizado: ${uciMove} · Turno: ${this.currentTurnLabel()}`
-                : `Movimiento inválido: ${uciMove} · Turno: ${this.currentTurnLabel()}`;
+            this.updateStatusMessage(moved, uciMove);
         } catch (error) {
             console.error('Error applying move:', error);
             this.turnIndicator.textContent = 'Error al enviar jugada';
@@ -101,6 +116,9 @@ class ChessGameClient {
                 if (this.availableMoves.has(squareName)) {
                     squareDiv.classList.add(piece ? 'available-capture' : 'available-move');
                 }
+                if (this.isThreatenedKing(piece)) {
+                    squareDiv.classList.add('in-check');
+                }
 
                 if (piece) {
                     const pieceSpan = document.createElement('span');
@@ -130,6 +148,9 @@ class ChessGameClient {
     }
 
     onSquareClicked(squareName, piece) {
+        if (this.isGameOver()) {
+            return;
+        }
         if (!this.selectedSquare) {
             // Primer clic: seleccionar casilla de origen si tiene pieza del turno activo
             if (piece) {
@@ -170,6 +191,39 @@ class ChessGameClient {
     isCurrentTurnPiece(piece) {
         const isWhitePiece = piece === piece.toUpperCase();
         return this.currentTurnSide() === 'w' ? isWhitePiece : !isWhitePiece;
+    }
+
+    isGameOver() {
+        return this.gameStatus === 'Checkmate' || this.gameStatus === 'Stalemate';
+    }
+
+    isThreatenedKing(piece) {
+        if (!piece || (this.gameStatus !== 'Check' && this.gameStatus !== 'Checkmate')) {
+            return false;
+        }
+        const expectedKing = this.currentTurnSide() === 'w' ? 'K' : 'k';
+        return piece === expectedKing;
+    }
+
+    updateStatusMessage(moved, uciMove) {
+        if (!moved) {
+            this.turnIndicator.textContent = `Movimiento inválido: ${uciMove} · Turno: ${this.currentTurnLabel()}`;
+            return;
+        }
+        if (this.gameStatus === 'Checkmate') {
+            const winner = this.currentTurnSide() === 'w' ? 'Negras' : 'Blancas';
+            this.turnIndicator.textContent = `¡Jaque mate! Ganan ${winner}`;
+            return;
+        }
+        if (this.gameStatus === 'Stalemate') {
+            this.turnIndicator.textContent = 'Tablas por ahogado';
+            return;
+        }
+        if (this.gameStatus === 'Check') {
+            this.turnIndicator.textContent = `¡Jaque! · Turno: ${this.currentTurnLabel()}`;
+            return;
+        }
+        this.turnIndicator.textContent = `Movimiento realizado: ${uciMove} · Turno: ${this.currentTurnLabel()}`;
     }
 
     parseFenToMatrix(fen) {
