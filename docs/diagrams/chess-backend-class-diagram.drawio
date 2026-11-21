@@ -340,6 +340,23 @@
           <mxGeometry height="66" width="160" y="40" as="geometry" />
         </mxCell>
 
+        <mxCell id="uc-gg" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=36;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="GetGameUseCase" vertex="1">
+          <mxGeometry height="74" width="220" x="1060" y="1020" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-gg-sep" parent="uc-gg" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;labelPerimeter=1;" value="" vertex="1">
+          <mxGeometry height="8" width="220" y="36" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-gg-m" parent="uc-gg" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="+ execute(idGame: String): Output" vertex="1">
+          <mxGeometry height="30" width="220" y="44" as="geometry" />
+        </mxCell>
+
+        <mxCell id="uc-gg-out" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="&amp;lt;&amp;lt;Record&amp;gt;&amp;gt;&lt;div&gt;Output&lt;/div&gt;" vertex="1">
+          <mxGeometry height="122" width="160" x="1090" y="1130" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-gg-out-a" parent="uc-gg-out" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="- idGame: String&lt;div&gt;- fen: String&lt;/div&gt;&lt;div&gt;- status: String&lt;/div&gt;&lt;div&gt;- kingSquare: String&lt;/div&gt;" vertex="1">
+          <mxGeometry height="82" width="160" y="40" as="geometry" />
+        </mxCell>
+
         <!-- ==================== DOMAIN & RULES ==================== -->
         <mxCell id="dom-rook" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=32;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="RookRule" vertex="1">
           <mxGeometry height="88" width="260" x="1900" y="340" as="geometry" />
@@ -527,6 +544,13 @@
         <mxCell id="e-cg-uc" edge="1" parent="1" source="uc-cg" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=block;endFill=0;endSize=12;" target="uc-iface"><mxGeometry relative="1" as="geometry" /></mxCell>
         <mxCell id="e-cg-gps" edge="1" parent="1" source="uc-cg" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=open;endFill=1;endSize=10;" target="port-gps"><mxGeometry relative="1" as="geometry" /></mxCell>
         <mxCell id="e-cg-gs" edge="1" parent="1" source="uc-cg" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=open;endFill=1;endSize=10;" target="port-gs"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="530" y="757" /><mxPoint x="530" y="1002" /></Array></mxGeometry></mxCell>
+        <mxCell id="e-gg-out" edge="1" parent="1" source="uc-gg-out" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;startArrow=circlePlus;endFill=0;startFill=0;endSize=8;" target="uc-gg"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e-gg-uc" edge="1" parent="1" source="uc-gg" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;endArrow=block;endFill=0;endSize=12;" target="uc-iface"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e-gg-gs" edge="1" parent="1" source="uc-gg" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=open;endFill=1;endSize=10;" target="port-gs"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e-gg-gps" edge="1" parent="1" source="uc-gg" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=open;endFill=1;endSize=10;" target="port-gps"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e-gg-ps" edge="1" parent="1" source="uc-gg" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=open;endFill=1;endSize=10;" target="port-ps"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e-gg-cd" edge="1" parent="1" source="uc-gg" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=open;endFill=1;endSize=10;" target="dom-cd"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e-gg-gse" edge="1" parent="1" source="uc-gg" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=open;endFill=1;endSize=10;" target="dom-gse"><mxGeometry relative="1" as="geometry" /></mxCell>
         <mxCell id="e-mp-gps" edge="1" parent="1" source="uc-mp" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=open;endFill=1;endSize=10;exitX=0;exitY=0.2;exitDx=0;exitDy=0;" target="port-gps"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="570" y="653" /><mxPoint x="570" y="590" /><mxPoint x="165" y="590" /></Array></mxGeometry></mxCell>
         <mxCell id="e-mp-gpd" edge="1" parent="1" source="uc-mp" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=open;endFill=1;endSize=10;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" target="port-gpd"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="570" y="703" /><mxPoint x="570" y="773" /></Array></mxGeometry></mxCell>
         <mxCell id="e-mp-md" edge="1" parent="1" source="uc-mp" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=open;endFill=1;endSize=10;exitX=0;exitY=0.8;exitDx=0;exitDy=0;" target="port-md"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="570" y="752" /><mxPoint x="570" y="883" /></Array></mxGeometry></mxCell>
