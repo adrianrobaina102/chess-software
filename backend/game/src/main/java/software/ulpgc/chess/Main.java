@@ -6,6 +6,7 @@ import io.javalin.http.staticfiles.Location;
 import software.ulpgc.chess.architecture.usecases.CreateGameUseCase;
 import software.ulpgc.chess.architecture.usecases.GetAvailableMovesUseCase;
 import software.ulpgc.chess.architecture.usecases.GetGameStatusUseCase;
+import software.ulpgc.chess.architecture.usecases.GetGameUseCase;
 import software.ulpgc.chess.architecture.usecases.GetInitialBoardUseCase;
 import software.ulpgc.chess.architecture.usecases.MovePieceUseCase;
 import software.ulpgc.chess.architecture.ports.in.BoardDeserializer;
@@ -56,6 +57,9 @@ public class Main {
         // 2. Casos de uso (Pure DI)
         GetInitialBoardUseCase getInitialBoardUseCase = new GetInitialBoardUseCase(gamePositionSerializer);
         CreateGameUseCase createGameUseCase = new CreateGameUseCase(gameStore, gamePositionSerializer);
+        GetGameUseCase getGameUseCase = new GetGameUseCase(
+                gameStore, gamePositionSerializer, checkDetector, gameStatusEvaluator, positionSerializer
+        );
         MovePieceUseCase movePieceUseCase = new MovePieceUseCase(gamePositionDeserializer, moveDeserializer, gamePositionSerializer, moveValidator);
         GetAvailableMovesUseCase getAvailableMovesUseCase = new GetAvailableMovesUseCase(
                 positionSerializer, positionDeserializer, moveValidator, gamePositionDeserializer
@@ -89,6 +93,10 @@ public class Main {
 
         app.post("/api/games", context -> {
             new CreateGameEndPoint(gson, context, createGameUseCase).execute();
+        });
+
+        app.get("/api/games", context -> {
+            new GetGameEndPoint(gson, context, getGameUseCase).execute();
         });
 
         System.out.println("Servidor iniciado:");
