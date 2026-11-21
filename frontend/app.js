@@ -1,6 +1,6 @@
-// Mapeo de caracteres FEN a símbolos Unicode de ajedrez (blancas y negras)
+// Mapeo de caracteres FEN a glifos sólidos monocromos (blancas y negras diferenciadas por CSS)
 const PIECE_SYMBOLS = {
-    'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
+    'K': '♚', 'Q': '♛', 'R': '♜', 'B': '♝', 'N': '♞', 'P': '♟',
     'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
 };
 
