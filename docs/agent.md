@@ -183,6 +183,7 @@ Se considerará alcanzado un "Gran Paso" cuando se cumpla al menos uno de los si
 - **`v1.0.0` (Core de Dominio del Ajedrez):** Implementación completa del modelo de dominio inmutable (`Board`, `Square`, `Move`, `Piece`, `Color`, `File`, `Rank`), representación geométrica del tablero, disposición inicial y primeros deserializadores algebraicos y FEN.
 - **`v2.0.0` (Arquitectura Hexagonal, Serializadores FEN/UCI y Casos de Uso):** Modularización en `game`, segregación de puertos (`serializer` y `deserializer`), adaptadores organizados por formato (`algebraic`, `fen`, `uci`), creación de los primeros casos de uso (`GetInitialBoardUseCase`, `MovePieceUseCase`) y primeras rutas HTTP en Javalin.
 - **`v3.0.0` (Frontend Web Ligero, Javalin Endpoints y Suite de Tests):** Integración del cliente web interactivo (HTML/CSS/JS con piezas Unicode) servido estáticamente por Javalin, adaptadores `EndPoint` para comunicación web, suite completa de 28 pruebas unitarias automatizadas (`BUILD SUCCESS`) y documentación técnica en `docs/`.
+- **`v4.0.0` (Motor Completo de Reglas, Turnos, Jaque/Mate y Core Reorganizado):** Reestructuración del Core (`model/`, `model/board/`, `domain/`, `domain/rules/`, `usecases/`, `ports/`), `PathGenerator`, detección de jaque, jaque mate y ahogado (`CheckDetector`, `GameStatusEvaluator`, `/api/board/status`), control de turno (`GamePosition`, `State`, `CastlingRight`), frontend con coordenadas, piezas rellenas y aviso visual de jaque, y 58 tests unitarios en verde.
 
 ---
 
