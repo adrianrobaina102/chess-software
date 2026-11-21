@@ -214,10 +214,9 @@ Para descargar al desarrollador de la fatiga mental y asegurar el cumplimiento d
 ### E. Alertas de GitFlow y Grandes Hitos
 - **Hito Funcional Completado:** Al terminar un subsistema completo (ej. sistema de salas, multiusuario, persistencia, reloj) con tests en verde $\to$ *"¡Ojo, jefe! Hemos completado este hito funcional, toca hacer merge a master y clavar el tag vX.X.0"*.
 
-### F. Reglas de Diagramas UML (Solo `.jpg` en el repositorio)
-- **Prohibido guardar archivos `.drawio` en el repositorio:** Los diagramas editables (`.drawio`) se mantienen fuera del repo (en Google Drive). En `docs/diagrams/` solo se almacena la imagen exportada en formato **`.jpg`** (ej. `docs/diagrams/chess-backend-class-diagram.jpg`).
-- **Sincronización Obligatoria al Crear o Modificar Clases:** Cada vez que se cree una nueva clase/interfaz/enum/record o se ajuste una clase existente (métodos, atributos o relaciones), el asistente **DEBE actualizar el diagrama UML** (generando el XML actualizado para Draw.io) y recordar al usuario exportar el `.jpg`.
+### F. Reglas de Diagramas UML (`.drawio` en el repositorio)
+- **Diagrama editable en el repositorio:** El diagrama de clases del backend se mantiene directamente en [`docs/diagrams/chess-backend-class-diagram.drawio`](docs/diagrams/chess-backend-class-diagram.drawio) para que el asistente pueda actualizarlo automáticamente sin copiar XML por el chat. *(Para las capturas finales de entrega o `README.md`, se exportará a `.jpg` cuando corresponda.)*
+- **Sincronización Obligatoria al Crear o Modificar Clases:** Cada vez que se cree una nueva clase/interfaz/enum/record o se ajuste una clase existente (métodos, atributos o relaciones), el asistente **DEBE actualizar directamente el `.drawio`** en el repositorio.
 - **Criterio de Limpieza del Diagrama (Estilo UML del Core):**
   - No incluir los `adapters` de `infrastructure/` en el diagrama principal de arquitectura (`model`, `domain`, `usecases` y `ports`), para mantenerlo legible y reducido.
   - No duplicar como atributos internos dentro de una caja las referencias/colaboradores que ya están representados mediante flechas de asociación entre clases.
-- **Obligación de subir `.jpg`:** Cada vez que se modifique el diseño o se genere nuevo XML de Draw.io para el usuario, el asistente **DEBE exigirle** al usuario que exporte y suba la imagen `.jpg` actualizada antes de dar por cerrado el cambio en el diagrama.
