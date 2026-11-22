@@ -30,10 +30,20 @@ public class GetGameUseCase implements UseCase<String, GetGameUseCase.Output> {
         return gameStore.load(idGame).map(gamePosition -> buildOutput(idGame, gamePosition)).orElseThrow(() -> new NoSuchElementException("Partida no encontrada: " + idGame));
     }
     private Output buildOutput(String idGame, GamePosition position) {
-        String status = this.gameStatusEvaluator.evaluate(position).name();
-        String fen = this.serializer.serialize(position);
-        String kingSquare  = this.detector.findKingSquare(position.board(), position.state().side())
-                .map(this.positionSerializer::serialize)
+        return toOutput(idGame, position, this.serializer, this.gameStatusEvaluator, this.detector, this.positionSerializer);
+    }
+
+    static Output toOutput(
+            String idGame,
+            GamePosition position,
+            GamePositionSerializer serializer,
+            GameStatusEvaluator gameStatusEvaluator,
+            CheckDetector detector,
+            PositionSerializer positionSerializer) {
+        String status = gameStatusEvaluator.evaluate(position).name();
+        String fen = serializer.serialize(position);
+        String kingSquare = detector.findKingSquare(position.board(), position.state().side())
+                .map(positionSerializer::serialize)
                 .orElse("");
         return new Output(idGame, fen, status, kingSquare);
     }
