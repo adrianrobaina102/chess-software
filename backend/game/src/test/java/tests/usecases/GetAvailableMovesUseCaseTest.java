@@ -4,12 +4,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import software.ulpgc.chess.architecture.domain.ChessMoveValidator;
-import software.ulpgc.chess.architecture.usecases.GetAvailableMovesUseCase;
-import software.ulpgc.chess.architecture.usecases.GetAvailableMovesUseCase.Input;
-import software.ulpgc.chess.infrastructure.adapters.in.AlgebraicPositionDeserializer;
-import software.ulpgc.chess.infrastructure.adapters.in.FenBoardDeserializer;
-import software.ulpgc.chess.infrastructure.adapters.in.FenGamePositionDeserializer;
-import software.ulpgc.chess.infrastructure.adapters.in.FenStateDeserializer;
+import software.ulpgc.chess.architecture.usecases.board.GetAvailableMovesUseCase;
+import software.ulpgc.chess.architecture.usecases.board.GetAvailableMovesUseCase.Input;
+import software.ulpgc.chess.infrastructure.adapters.in.deserializers.AlgebraicPositionDeserializer;
+import software.ulpgc.chess.infrastructure.adapters.in.deserializers.FenBoardDeserializer;
+import software.ulpgc.chess.infrastructure.adapters.in.deserializers.FenGamePositionDeserializer;
+import software.ulpgc.chess.infrastructure.adapters.in.deserializers.FenStateDeserializer;
 import software.ulpgc.chess.infrastructure.adapters.out.AlgebraicPositionSerializer;
 
 import java.util.List;

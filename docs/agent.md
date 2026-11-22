@@ -32,9 +32,11 @@ backend/game/src/main/java/software/ulpgc/chess/
 │   │
 │   ├── usecases/                        <-- Acciones del sistema / orquestación de aplicación
 │   │   ├── UseCase
-│   │   ├── GetInitialBoardUseCase
-│   │   ├── MovePieceUseCase
-│   │   └── GetAvailableMovesUseCase
+│   │   ├── board/                       <-- Casos de uso stateless sobre el tablero
+│   │   │   ├── GetInitialBoardUseCase, MovePieceUseCase
+│   │   │   └── GetAvailableMovesUseCase, GetGameStatusUseCase
+│   │   └── game/                        <-- Casos de uso sobre partidas persistidas
+│   │       └── CreateGameUseCase, GetGameUseCase, PlayMoveUseCase
 │   │
 │   └── ports/                           <-- Contratos con el exterior (ISP extremo)
 │       ├── in/                          <-- Puertos de entrada (lectura / deserializadores)
@@ -50,15 +52,13 @@ backend/game/src/main/java/software/ulpgc/chess/
 │
 ├── infrastructure/                      <-- Exterior (HTTP/Javalin, formatos FEN/UCI, BD)
 │   └── adapters/
-│       ├── in/                          <-- Adaptadores de entrada (EndPoints Javalin y Deserializadores)
-│       │   ├── EndPoint
-│       │   ├── GetInitialBoardEndPoint
-│       │   ├── MovePieceEndPoint
-│       │   ├── GetAvailableMovesEndPoint
-│       │   ├── AlgebraicPositionDeserializer
-│       │   ├── FenBoardDeserializer
-│       │   ├── FenStateDeserializer
-│       │   └── UciMoveDeserializer
+│       ├── in/                          <-- Adaptadores de entrada
+│       │   ├── rest/                    <-- EndPoints HTTP/Javalin
+│       │   │   ├── EndPoint, CreateGameEndPoint, GetGameEndPoint, UpdateGameEndPoint
+│       │   │   └── GetInitialBoardEndPoint, MovePieceEndPoint, GetAvailableMovesEndPoint, GetGameStatusEndPoint
+│       │   └── deserializers/           <-- Deserializadores (FEN, UCI, Algebraico)
+│       │       ├── AlgebraicPositionDeserializer, FenBoardDeserializer
+│       │       └── FenGamePositionDeserializer, FenStateDeserializer, UciMoveDeserializer
 │       │
 │       └── out/                         <-- Adaptadores de salida (Serializadores y persistencia)
 │           ├── AlgebraicPositionSerializer

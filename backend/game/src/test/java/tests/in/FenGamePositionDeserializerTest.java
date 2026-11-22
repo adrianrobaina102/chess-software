@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 import software.ulpgc.chess.architecture.model.GamePosition;
 import software.ulpgc.chess.architecture.model.board.Color;
 import software.ulpgc.chess.architecture.model.board.Piece;
-import software.ulpgc.chess.infrastructure.adapters.in.FenBoardDeserializer;
-import software.ulpgc.chess.infrastructure.adapters.in.FenGamePositionDeserializer;
-import software.ulpgc.chess.infrastructure.adapters.in.FenStateDeserializer;
+import software.ulpgc.chess.infrastructure.adapters.in.deserializers.FenBoardDeserializer;
+import software.ulpgc.chess.infrastructure.adapters.in.deserializers.FenGamePositionDeserializer;
+import software.ulpgc.chess.infrastructure.adapters.in.deserializers.FenStateDeserializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static software.ulpgc.chess.architecture.model.CastlingRight.*;

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import software.ulpgc.chess.architecture.model.board.Color;
 import software.ulpgc.chess.architecture.model.board.State;
-import software.ulpgc.chess.infrastructure.adapters.in.FenStateDeserializer;
+import software.ulpgc.chess.infrastructure.adapters.in.deserializers.FenStateDeserializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static software.ulpgc.chess.architecture.model.CastlingRight.*;

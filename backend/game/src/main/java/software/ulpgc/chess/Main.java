@@ -3,10 +3,13 @@ package software.ulpgc.chess;
 import com.google.gson.Gson;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
-import software.ulpgc.chess.architecture.usecases.GetAvailableMovesUseCase;
-import software.ulpgc.chess.architecture.usecases.GetGameStatusUseCase;
-import software.ulpgc.chess.architecture.usecases.GetInitialBoardUseCase;
-import software.ulpgc.chess.architecture.usecases.MovePieceUseCase;
+import software.ulpgc.chess.architecture.usecases.game.CreateGameUseCase;
+import software.ulpgc.chess.architecture.usecases.board.GetAvailableMovesUseCase;
+import software.ulpgc.chess.architecture.usecases.board.GetGameStatusUseCase;
+import software.ulpgc.chess.architecture.usecases.game.GetGameUseCase;
+import software.ulpgc.chess.architecture.usecases.board.GetInitialBoardUseCase;
+import software.ulpgc.chess.architecture.usecases.board.MovePieceUseCase;
+import software.ulpgc.chess.architecture.usecases.game.PlayMoveUseCase;
 import software.ulpgc.chess.architecture.ports.in.BoardDeserializer;
 import software.ulpgc.chess.architecture.ports.in.GamePositionDeserializer;
 import software.ulpgc.chess.architecture.ports.in.MoveDeserializer;
@@ -14,19 +17,23 @@ import software.ulpgc.chess.architecture.ports.in.PositionDeserializer;
 import software.ulpgc.chess.architecture.ports.in.StateDeserializer;
 import software.ulpgc.chess.architecture.ports.out.BoardSerializer;
 import software.ulpgc.chess.architecture.ports.out.GamePositionSerializer;
+import software.ulpgc.chess.architecture.ports.out.GameStore;
 import software.ulpgc.chess.architecture.ports.out.PositionSerializer;
 import software.ulpgc.chess.architecture.ports.out.StateSerializer;
 import software.ulpgc.chess.architecture.domain.MoveValidator;
-import software.ulpgc.chess.infrastructure.adapters.in.*;
+import software.ulpgc.chess.infrastructure.adapters.in.deserializers.*;
+import software.ulpgc.chess.infrastructure.adapters.in.rest.*;
 import software.ulpgc.chess.infrastructure.adapters.out.AlgebraicPositionSerializer;
 import software.ulpgc.chess.infrastructure.adapters.out.FenBoardSerializer;
 import software.ulpgc.chess.infrastructure.adapters.out.FenGamePositionSerializer;
 import software.ulpgc.chess.infrastructure.adapters.out.FenStateSerializer;
+import software.ulpgc.chess.infrastructure.adapters.out.FileGameStore;
 import software.ulpgc.chess.architecture.domain.CheckDetector;
 import software.ulpgc.chess.architecture.domain.ChessMoveValidator;
 import software.ulpgc.chess.architecture.domain.GameStatusEvaluator;
 import software.ulpgc.chess.architecture.domain.PseudoLegalMoveValidator;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -46,10 +53,18 @@ public class Main {
         CheckDetector checkDetector = new CheckDetector(pseudoLegalValidator);
         MoveValidator moveValidator = new ChessMoveValidator(pseudoLegalValidator, checkDetector);
         GameStatusEvaluator gameStatusEvaluator = new GameStatusEvaluator(moveValidator, checkDetector);
+        GameStore gameStore = new FileGameStore(new File("games"), gamePositionSerializer, gamePositionDeserializer);
         Gson gson = new Gson();
 
         // 2. Casos de uso (Pure DI)
         GetInitialBoardUseCase getInitialBoardUseCase = new GetInitialBoardUseCase(gamePositionSerializer);
+        CreateGameUseCase createGameUseCase = new CreateGameUseCase(gameStore, gamePositionSerializer);
+        GetGameUseCase getGameUseCase = new GetGameUseCase(
+                gameStore, gamePositionSerializer, checkDetector, gameStatusEvaluator, positionSerializer
+        );
+        PlayMoveUseCase playMoveUseCase = new PlayMoveUseCase(
+                gameStatusEvaluator, gameStore, moveDeserializer, moveValidator, gamePositionSerializer, checkDetector, positionSerializer
+        );
         MovePieceUseCase movePieceUseCase = new MovePieceUseCase(gamePositionDeserializer, moveDeserializer, gamePositionSerializer, moveValidator);
         GetAvailableMovesUseCase getAvailableMovesUseCase = new GetAvailableMovesUseCase(
                 positionSerializer, positionDeserializer, moveValidator, gamePositionDeserializer
@@ -79,6 +94,18 @@ public class Main {
 
         app.get("/api/board/status", context -> {
             new GetGameStatusEndPoint(gson, getGameStatusUseCase, context).execute();
+        });
+
+        app.post("/api/games", context -> {
+            new CreateGameEndPoint(gson, context, createGameUseCase).execute();
+        });
+
+        app.get("/api/games", context -> {
+            new GetGameEndPoint(gson, context, getGameUseCase).execute();
+        });
+
+        app.put("/api/games", context -> {
+            new UpdateGameEndPoint(gson, context, playMoveUseCase).execute();
         });
 
         System.out.println("Servidor iniciado:");

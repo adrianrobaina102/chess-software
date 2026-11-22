@@ -5,6 +5,7 @@ const PIECE_SYMBOLS = {
 };
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+const GAME_STORAGE_KEY = 'chess.gameId';
 
 class ChessGameClient {
     constructor() {
@@ -13,6 +14,7 @@ class ChessGameClient {
         this.turnIndicator = document.getElementById('turn-indicator');
         this.resetButton = document.getElementById('reset-btn');
 
+        this.gameId = null;
         this.currentFen = '';
         this.selectedSquare = null;
         this.availableMoves = new Set();
@@ -23,38 +25,58 @@ class ChessGameClient {
     }
 
     async init() {
-        this.resetButton.addEventListener('click', () => this.fetchInitialBoard());
-        await this.fetchInitialBoard();
+        this.resetButton.addEventListener('click', () => this.createNewGame());
+        await this.loadOrCreateGame();
     }
 
-    async fetchInitialBoard() {
+    async loadOrCreateGame() {
+        const savedId = localStorage.getItem(GAME_STORAGE_KEY);
+        if (savedId) {
+            try {
+                const response = await fetch(`/api/games?id=${encodeURIComponent(savedId)}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    this.applyGameState(data);
+                    if (this.gameStatus === 'Playing') {
+                        this.turnIndicator.textContent = `Turno: ${this.currentTurnLabel()}`;
+                    } else {
+                        this.updateStatusMessage(true, '');
+                    }
+                    return;
+                }
+            } catch (error) {
+                console.error('Error loading saved game:', error);
+            }
+        }
+        await this.createNewGame();
+    }
+
+    async createNewGame() {
         try {
-            const response = await fetch('/api/board/initial');
-            this.currentFen = await response.text();
-            this.selectedSquare = null;
-            this.availableMoves.clear();
-            this.gameStatus = 'Playing';
-            this.checkedKingSquare = null;
-            this.updateUi();
+            const response = await fetch('/api/games', { method: 'POST' });
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            const data = await response.json();
+            localStorage.setItem(GAME_STORAGE_KEY, data.idGame);
+            this.applyGameState(data);
             this.turnIndicator.textContent = `Turno: ${this.currentTurnLabel()}`;
         } catch (error) {
-            console.error('Error fetching initial board:', error);
+            console.error('Error creating game:', error);
             this.turnIndicator.textContent = 'Error conectando con el backend';
         }
     }
 
-    async fetchGameStatus() {
-        const url = `/api/board/status?board=${encodeURIComponent(this.currentFen)}`;
-        try {
-            const response = await fetch(url);
-            const data = await response.json();
-            this.gameStatus = data?.status || 'Playing';
-            this.checkedKingSquare = data?.kingSquare || null;
-        } catch (error) {
-            console.error('Error fetching game status:', error);
-            this.gameStatus = 'Playing';
-            this.checkedKingSquare = null;
-        }
+    applyGameState(data) {
+        this.gameId = data.idGame;
+        this.currentFen = data.fen;
+        this.gameStatus = data.status || 'Playing';
+        this.checkedKingSquare = (this.gameStatus === 'Check' || this.gameStatus === 'Checkmate')
+            ? (data.kingSquare || null)
+            : null;
+        this.selectedSquare = null;
+        this.availableMoves.clear();
+        this.updateUi();
     }
 
     async fetchAvailableMoves(squareName) {
@@ -73,20 +95,23 @@ class ChessGameClient {
 
     async makeMove(fromSquare, toSquare) {
         const uciMove = `${fromSquare}${toSquare}`;
-        const url = `/api/board/move?board=${encodeURIComponent(this.currentFen)}&move=${encodeURIComponent(uciMove)}`;
+        const url = `/api/games?id=${encodeURIComponent(this.gameId)}&move=${encodeURIComponent(uciMove)}`;
 
         try {
-            const response = await fetch(url);
-            const newFen = await response.text();
-            const moved = newFen !== this.currentFen;
-            this.currentFen = newFen;
-            this.selectedSquare = null;
-            this.availableMoves.clear();
-            if (moved) {
-                await this.fetchGameStatus();
+            const response = await fetch(url, { method: 'PUT' });
+            if (response.status === 400) {
+                this.selectedSquare = null;
+                this.availableMoves.clear();
+                this.renderBoard();
+                this.updateStatusMessage(false, uciMove);
+                return;
             }
-            this.updateUi();
-            this.updateStatusMessage(moved, uciMove);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            const data = await response.json();
+            this.applyGameState(data);
+            this.updateStatusMessage(true, uciMove);
         } catch (error) {
             console.error('Error applying move:', error);
             this.turnIndicator.textContent = 'Error al enviar jugada';

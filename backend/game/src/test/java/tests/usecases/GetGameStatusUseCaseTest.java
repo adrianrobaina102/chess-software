@@ -4,10 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import software.ulpgc.chess.architecture.domain.*;
-import software.ulpgc.chess.architecture.usecases.GetGameStatusUseCase;
-import software.ulpgc.chess.infrastructure.adapters.in.FenBoardDeserializer;
-import software.ulpgc.chess.infrastructure.adapters.in.FenGamePositionDeserializer;
-import software.ulpgc.chess.infrastructure.adapters.in.FenStateDeserializer;
+import software.ulpgc.chess.architecture.usecases.board.GetGameStatusUseCase;
+import software.ulpgc.chess.infrastructure.adapters.in.deserializers.FenBoardDeserializer;
+import software.ulpgc.chess.infrastructure.adapters.in.deserializers.FenGamePositionDeserializer;
+import software.ulpgc.chess.infrastructure.adapters.in.deserializers.FenStateDeserializer;
 import software.ulpgc.chess.infrastructure.adapters.out.AlgebraicPositionSerializer;
 
 import static org.assertj.core.api.Assertions.assertThat;

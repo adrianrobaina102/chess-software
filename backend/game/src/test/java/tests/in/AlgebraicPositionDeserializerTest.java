@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import software.ulpgc.chess.architecture.model.board.File;
 import software.ulpgc.chess.architecture.model.board.Rank;
 import software.ulpgc.chess.architecture.model.board.Square;
-import software.ulpgc.chess.infrastructure.adapters.in.AlgebraicPositionDeserializer;
+import software.ulpgc.chess.infrastructure.adapters.in.deserializers.AlgebraicPositionDeserializer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

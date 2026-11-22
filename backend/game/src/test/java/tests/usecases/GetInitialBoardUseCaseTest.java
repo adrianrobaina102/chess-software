@@ -2,7 +2,7 @@ package tests.usecases;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import software.ulpgc.chess.architecture.usecases.GetInitialBoardUseCase;
+import software.ulpgc.chess.architecture.usecases.board.GetInitialBoardUseCase;
 import software.ulpgc.chess.infrastructure.adapters.out.FenBoardSerializer;
 import software.ulpgc.chess.infrastructure.adapters.out.FenGamePositionSerializer;
 import software.ulpgc.chess.infrastructure.adapters.out.FenStateSerializer;
