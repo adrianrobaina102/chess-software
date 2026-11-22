@@ -1,7 +1,7 @@
-package software.ulpgc.chess.infrastructure.adapters.in;
+package software.ulpgc.chess.infrastructure.adapters.in.rest;
 
 import io.javalin.http.Context;
-import software.ulpgc.chess.architecture.usecases.GetInitialBoardUseCase;
+import software.ulpgc.chess.architecture.usecases.board.GetInitialBoardUseCase;
 
 public class GetInitialBoardEndPoint implements EndPoint {
     private final GetInitialBoardUseCase useCase;

@@ -9,7 +9,7 @@ import software.ulpgc.chess.architecture.domain.MoveValidator;
 import software.ulpgc.chess.architecture.domain.PseudoLegalMoveValidator;
 import software.ulpgc.chess.architecture.model.GamePosition;
 import software.ulpgc.chess.architecture.ports.out.GameStore;
-import software.ulpgc.chess.architecture.usecases.GetGameUseCase;
+import software.ulpgc.chess.architecture.usecases.game.GetGameUseCase;
 import software.ulpgc.chess.infrastructure.adapters.out.AlgebraicPositionSerializer;
 import software.ulpgc.chess.infrastructure.adapters.out.FenBoardSerializer;
 import software.ulpgc.chess.infrastructure.adapters.out.FenGamePositionSerializer;

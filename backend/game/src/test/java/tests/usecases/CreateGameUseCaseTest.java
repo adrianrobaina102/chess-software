@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import software.ulpgc.chess.architecture.model.GamePosition;
 import software.ulpgc.chess.architecture.ports.out.GameStore;
-import software.ulpgc.chess.architecture.usecases.CreateGameUseCase;
+import software.ulpgc.chess.architecture.usecases.game.CreateGameUseCase;
 import software.ulpgc.chess.infrastructure.adapters.out.FenBoardSerializer;
 import software.ulpgc.chess.infrastructure.adapters.out.FenGamePositionSerializer;
 import software.ulpgc.chess.infrastructure.adapters.out.FenStateSerializer;

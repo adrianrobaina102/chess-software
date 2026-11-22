@@ -1,4 +1,6 @@
-package software.ulpgc.chess.architecture.usecases;
+package software.ulpgc.chess.architecture.usecases.board;
+
+import software.ulpgc.chess.architecture.usecases.UseCase;
 
 import software.ulpgc.chess.architecture.model.GamePosition;
 import software.ulpgc.chess.architecture.model.board.Board;

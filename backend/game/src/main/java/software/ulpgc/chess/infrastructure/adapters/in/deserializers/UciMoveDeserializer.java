@@ -1,4 +1,4 @@
-package software.ulpgc.chess.infrastructure.adapters.in;
+package software.ulpgc.chess.infrastructure.adapters.in.deserializers;
 
 import software.ulpgc.chess.architecture.model.board.Move;
 import software.ulpgc.chess.architecture.ports.in.MoveDeserializer;

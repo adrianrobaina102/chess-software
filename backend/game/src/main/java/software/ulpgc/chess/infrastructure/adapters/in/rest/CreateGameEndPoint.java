@@ -1,8 +1,8 @@
-package software.ulpgc.chess.infrastructure.adapters.in;
+package software.ulpgc.chess.infrastructure.adapters.in.rest;
 
 import com.google.gson.Gson;
 import io.javalin.http.Context;
-import software.ulpgc.chess.architecture.usecases.CreateGameUseCase;
+import software.ulpgc.chess.architecture.usecases.game.CreateGameUseCase;
 
 public class CreateGameEndPoint implements EndPoint{
     private final Gson gson;

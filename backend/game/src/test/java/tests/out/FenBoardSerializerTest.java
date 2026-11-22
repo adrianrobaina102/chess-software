@@ -2,7 +2,7 @@ package tests.out;
 
 import org.junit.jupiter.api.Test;
 import software.ulpgc.chess.architecture.model.board.Board;
-import software.ulpgc.chess.infrastructure.adapters.in.FenBoardDeserializer;
+import software.ulpgc.chess.infrastructure.adapters.in.deserializers.FenBoardDeserializer;
 import software.ulpgc.chess.infrastructure.adapters.out.FenBoardSerializer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

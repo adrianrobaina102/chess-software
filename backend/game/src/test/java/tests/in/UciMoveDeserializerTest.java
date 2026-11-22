@@ -5,7 +5,7 @@ import software.ulpgc.chess.architecture.model.board.File;
 import software.ulpgc.chess.architecture.model.board.Move;
 import software.ulpgc.chess.architecture.model.board.Rank;
 import software.ulpgc.chess.architecture.model.board.Square;
-import software.ulpgc.chess.infrastructure.adapters.in.UciMoveDeserializer;
+import software.ulpgc.chess.infrastructure.adapters.in.deserializers.UciMoveDeserializer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
