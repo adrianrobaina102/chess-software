@@ -4,31 +4,28 @@ Resumen del estado actual y de las tareas pendientes, ordenadas por área con su
 
 ---
 
-## ✅ Ya completado (`backend/game` + `frontend/`)
+## ✅ Ya completado (`v5.0.0` — `backend/game` + `frontend/`)
 
-- Modelo de dominio inmutable (`Board`, `Square`, `Move`, `Piece`, `Color`, `File`, `Rank`, `State`).
+- Modelo de dominio inmutable (`GamePosition`, `Board`, `Square`, `Move`, `Piece`, `Color`, `File`, `Rank`, `State`, `CastlingRight`, `GameStatus`).
 - Serializadores y deserializadores FEN, UCI y notación algebraica.
-- Reglas de movimiento por pieza (`RookRule`, `BishopRule`, `QueenRule`, `KingRule`, `KnightRule`, `PawnRule`).
-- Validación de jugadas legales con detección de jaque (`PseudoLegalMoveValidator`, `CheckDetector`, `ChessMoveValidator`).
-- Casos de uso (`GetInitialBoardUseCase`, `MovePieceUseCase`, `GetAvailableMovesUseCase`) y endpoints HTTP en Javalin.
-- Frontend SPA: tablero 8x8 con coordenadas (`a`–`h`, `1`–`8`), resaltado de jugadas válidas/capturas y aviso de jugada inválida.
-- Suite de **45 tests unitarios** (JUnit 5 + AssertJ) en verde.
+- Reglas de movimiento por pieza (`RookRule`, `BishopRule`, `QueenRule`, `KingRule`, `KnightRule`, `PawnRule`) con `SlidingPathGenerator` y `SingleStepPathGenerator`.
+- Validación de jugadas legales con detección de jaque, jaque mate y ahogado (`PseudoLegalMoveValidator`, `CheckDetector`, `ChessMoveValidator`, `GameStatusEvaluator`).
+- Persistencia de partidas en disco (`GameStore` + `FileGameStore`).
+- Casos de uso organizados en `usecases/board/` y `usecases/game/`, y adaptadores de entrada en `adapters/in/rest/` y `adapters/in/deserializers/`.
+- API REST completa de partidas (`POST /api/games`, `GET /api/games`, `PUT /api/games`) con manejo de errores `400`/`404`, junto a los endpoints `/api/board/*`.
+- Frontend SPA conectado a `/api/games` con `localStorage` (recupera partida tras F5), indicador de turno, resaltado de jugadas válidas/capturas y aviso visual de jaque, mate y ahogado.
+- Suite de **67 tests unitarios** (JUnit 5 + AssertJ) en verde y diagrama `.drawio` actualizado.
 
 ---
 
 ## 📋 Tareas pendientes
 
-### 1. Reglas de ajedrez y experiencia de tablero (`backend/game` + `frontend/`)
+### 1. Reglas de ajedrez avanzadas (`backend/game` + `frontend/`)
 
 | Tarea | Dificultad | Qué aporta |
 | :--- | :---: | :--- |
-| **Refactor `PathGenerator` en `rules/`** *(en curso)* | **Baja** | Elimina código duplicado separando `SlidingPathGenerator` y `SingleStepPathGenerator`. |
-| **Alinear modelo `Position` / `State` / `Game` y `Operation`** | **Media** | `Position(Board, State)` con `State(side, castlingRights)` y respuestas REST con código HTTP (`status` + `result`). |
-| **Control de turno activo (`w` / `b`)** | **Baja** | Evita mover piezas del rival en backend y muestra de quién es el turno en la UI. |
-| **Aviso visual de Jaque + Jaque Mate / Ahogado** | **Media** | Marca al rey amenazado y detecta el fin de partida automático. |
 | **Promoción de peón** | **Media** | Permite coronar al llegar a la última fila (UCI tipo `e7e8q` + selector visual). |
 | **Enroque y captura al paso (*en passant*)** | **Media-Alta** | Completa las reglas oficiales del ajedrez usando `State` (`castlingRights` y casilla *en passant*). |
-| **API REST real en `game-service` (`GET` / `POST` / `PUT`)** | **Media** | `POST` crea partida y devuelve `id_game` JSON; `GET ?id_game=` consulta; `PUT` aplica jugada con validación estricta (400/404). |
 
 ---
 
@@ -84,41 +81,27 @@ Resumen del estado actual y de las tareas pendientes, ordenadas por área con su
 
 Regla de oro: **no abrir un frente nuevo sin dejar el anterior compilando y con tests en verde**. Este es el orden recomendado paso a paso:
 
-### Fase 1 — Cerrar el núcleo de reglas (`backend/game`)
-1. **Terminar el refactor de `PathGenerator`** *(tu punto actual)*:
-   - Quitar `maxSteps` de `PathGenerator`, dejar las 6 reglas dependiendo solo de la interfaz `PathGenerator` y crear `Sliding` / `SingleStep` en `PseudoLegalMoveValidator.initialMap()`.
-   - *Cierre:* los 45 tests actuales en verde.
-2. **Envolver `Board` + `State` en `Position` y activar turnos (`w` / `b`)**:
-   - Crear `CastlingRight`, actualizar `State(Color side, Set<CastlingRight>)`, crear `record Position(Board, State)` y combinar FEN de tablero + estado.
-   - Validar el turno en `MovePieceUseCase` / `GetAvailableMovesUseCase` y mostrar *"Turno: Blancas/Negras"* en el frontend.
-   - *Cierre:* no se pueden mover piezas del rival ni seleccionarlas fuera de turno + tests en verde.
-3. **Jaque mate / ahogado + aviso visual en tablero**:
-   - Añadir detección de sin jugadas legales (`isCheckmate` / `isStalemate`) aprovechando `ChessMoveValidator` + `CheckDetector`, y marcar al rey amenazado en el frontend.
-
-### Fase 2 — Pasar de "tablero suelto" a API REST persistida (`game-service`)
-4. **Introducir `GameStore` + `Operation` (`status` + `result`)**:
-   - Definir puerto `GameStore` (con implementaciones en fichero o SQLite/MySQL) para guardar/cargar partidas por `id_game`.
-   - Exponer endpoints REST reales: `POST` (crea partida y devuelve `id_game`), `GET ?id_game=` (recupera estado) y `PUT` (valida entrada HTTP estrictamente → `200`/`400`/`404` y persiste la jugada).
-   - *Cierre:* pruebas unitarias con mocks de `GameStore` y pruebas de casos de error (`400`/`404`).
-5. **Desacoplar `fetch` en `frontend/`**:
+### Fase 1 — Completar núcleo y cliente (`v5.0.0` ✅ / siguientes pasos)
+1. **Reglas básicas, `GameStore`, API REST `/api/games` y conexión en frontend** ✅ *(completado en `v5.0.0`)*.
+2. **Desacoplar `fetch` en `frontend/`** *(siguiente paso recomendado)*:
    - Extraer las llamadas HTTP de `ChessGameClient` a un adaptador/servicio propio para cumplir la arquitectura hexagonal ligera en cliente.
-6. *(Opcional si da tiempo)* **Promoción de peón, enroque y *en passant*** usando `Position` y `CastlingRight`.
+3. *(Opcional si da tiempo)* **Promoción de peón, enroque y *en passant*** usando `GamePosition` y `CastlingRight`.
 
-### Fase 3 — Salas, Usuarios y 2 jugadores (`MatchService`, `PlayerService`, `Auth`/`Register`)
-7. **Servicios de usuario y jugador (`RegisterService`, `AuthService`, `PlayerService`)**:
+### Fase 2 — Salas, Usuarios y 2 jugadores (`MatchService`, `PlayerService`, `Auth`/`Register`)
+4. **Servicios de usuario y jugador (`RegisterService`, `AuthService`, `PlayerService`)**:
    - Separar cuenta persistente en BD (`Register`/`Auth`) de jugador activo en partida (`PlayerService` notificado al registrarse).
-8. **`MatchService` + tiempo real**:
+5. **`MatchService` + tiempo real**:
    - Crear sala, unirse por código, asociar dos jugadores (blancas/negras) a un `id_game` y sincronizar jugadas (WebSocket o polling).
    - Cubrir tests de error (sala inexistente, sala llena, turno incorrecto).
 
-### Fase 4 — Infraestructura y Aportación propia
-9. **Balanceador / Gateway con `Nginx`**:
+### Fase 3 — Infraestructura y Aportación propia
+6. **Balanceador / Gateway con `Nginx`**:
    - Colocar Nginx delante de los servicios (`/game`, `/match`, `/auth`, frontend estático) para enrutar y balancear carga.
-10. **Aportación propia visible (15% rúbrica)**:
-    - Añadir una mejora clara sobre lo ya montado (ej. historial de jugadas en pantalla, reloj de partida o modo espectador).
+7. **Aportación propia visible (15% rúbrica)**:
+   - Añadir una mejora clara sobre lo ya montado (ej. historial de jugadas en pantalla, reloj de partida o modo espectador).
 
-### Fase 5 — Cierre y entrega
-11. **Diagrama UML y documentación**:
-    - Exportar el `.jpg` final a `docs/diagrams/chess-backend-class-diagram.jpg`, añadir las 3 capturas obligatorias en `README.md` (tablero, salas, histórico) y documentar arquitectura y límites conocidos.
-12. **GitFlow final**:
-    - Merge `develop` → `master` y crear el tag de entrega (`v4.0.0` / final).
+### Fase 4 — Cierre y entrega
+8. **Diagrama UML y documentación**:
+   - Exportar el `.jpg` final a `docs/diagrams/chess-backend-class-diagram.jpg`, añadir las 3 capturas obligatorias en `README.md` (tablero, salas, histórico) y documentar arquitectura y límites conocidos.
+9. **GitFlow final**:
+   - Merge `develop` → `master` y crear el tag de entrega final.
