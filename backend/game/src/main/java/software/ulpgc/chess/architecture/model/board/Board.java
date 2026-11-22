@@ -56,8 +56,14 @@ public final class Board {
     public Board move(Square from, Square to){
         if (!pieces.containsKey(from)){return this;}
         Map<Square, Piece> newMap = new HashMap<>(this.pieces);
-        newMap.put(to, newMap.remove(from));
+        Piece moved = promoteIfNeeded(newMap.remove(from), to);
+        newMap.put(to, moved);
         return new Board(newMap);
+    }
+    private Piece promoteIfNeeded(Piece piece, Square to){
+        if (piece == WhitePawn && to.rank() == Rank.R8) {return WhiteQueen;}
+        if (piece == BlackPawn && to.rank() == Rank.R1) {return BlackQueen;}
+        return piece;
     }
     public Board move(Move move){
         return move(move.from(), move.to());
