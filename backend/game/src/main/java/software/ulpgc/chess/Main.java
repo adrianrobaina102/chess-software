@@ -9,6 +9,7 @@ import software.ulpgc.chess.architecture.usecases.GetGameStatusUseCase;
 import software.ulpgc.chess.architecture.usecases.GetGameUseCase;
 import software.ulpgc.chess.architecture.usecases.GetInitialBoardUseCase;
 import software.ulpgc.chess.architecture.usecases.MovePieceUseCase;
+import software.ulpgc.chess.architecture.usecases.PlayMoveUseCase;
 import software.ulpgc.chess.architecture.ports.in.BoardDeserializer;
 import software.ulpgc.chess.architecture.ports.in.GamePositionDeserializer;
 import software.ulpgc.chess.architecture.ports.in.MoveDeserializer;
@@ -60,6 +61,9 @@ public class Main {
         GetGameUseCase getGameUseCase = new GetGameUseCase(
                 gameStore, gamePositionSerializer, checkDetector, gameStatusEvaluator, positionSerializer
         );
+        PlayMoveUseCase playMoveUseCase = new PlayMoveUseCase(
+                gameStatusEvaluator, gameStore, moveDeserializer, moveValidator, gamePositionSerializer, checkDetector, positionSerializer
+        );
         MovePieceUseCase movePieceUseCase = new MovePieceUseCase(gamePositionDeserializer, moveDeserializer, gamePositionSerializer, moveValidator);
         GetAvailableMovesUseCase getAvailableMovesUseCase = new GetAvailableMovesUseCase(
                 positionSerializer, positionDeserializer, moveValidator, gamePositionDeserializer
@@ -97,6 +101,10 @@ public class Main {
 
         app.get("/api/games", context -> {
             new GetGameEndPoint(gson, context, getGameUseCase).execute();
+        });
+
+        app.put("/api/games", context -> {
+            new UpdateGameEndPoint(gson, context, playMoveUseCase).execute();
         });
 
         System.out.println("Servidor iniciado:");
