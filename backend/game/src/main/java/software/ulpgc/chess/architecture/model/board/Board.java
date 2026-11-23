@@ -9,6 +9,9 @@ public final class Board {
     public Board(Map<Square, Piece> pieces) {
         this.pieces = Map.copyOf(pieces);
     }
+    public static Builder builder() {
+        return new Builder();
+    }
     public static Board initial(){
 
         return new Board(initialMap());
@@ -52,6 +55,25 @@ public final class Board {
                 Map.entry(at("g8"), BlackKnight),
                 Map.entry(at("h8"), BlackRook)
         );
+    }
+    public static class Builder {
+        private final Map<Square, Piece> pieces = new HashMap<>();
+        public Builder put(Square square, Piece piece) {
+            this.pieces.put(square, piece);
+            return this;
+        }
+        public Builder put(String notation, Piece piece) {
+            return put(Square.at(notation), piece);
+        }
+        public Builder pieces(Map<Square, Piece> pieces)
+        {
+            this.pieces.putAll(pieces);
+            return this;
+        }
+        public Board build()
+        {
+            return new Board(pieces);
+        }
     }
     public Board move(Square from, Square to){
         if (!pieces.containsKey(from)){return this;}

@@ -40,8 +40,7 @@ public class GetAvailableMovesUseCase implements UseCase<GetAvailableMovesUseCas
         return process(position, this.positionDeserializer.deserialize(square));
     }
     private List<String> process(GamePosition position, Square square) {
-        Piece piece = position.board().pieceAt(square);
-        if (piece == null || piece.color() != position.state().side()) {
+        if (!isTurnPiece(position, square)) {
             return List.of();
         }
         return process(this.validator.validMoves(position.board(), square));
@@ -50,4 +49,9 @@ public class GetAvailableMovesUseCase implements UseCase<GetAvailableMovesUseCas
     private List<String> process(List<Square> squares) {
         return squares.stream().map(serializer::serialize).toList();
     }
+
+    private boolean isTurnPiece(GamePosition position, Square square) {
+        return pieceAt(position, square) != null && pieceAt(position, square).color() == position.state().side();
+    }
+    private Piece pieceAt(GamePosition position, Square square){ return  position.board().pieceAt(square);}
 }
