@@ -88,13 +88,13 @@
         </mxCell>
 
         <mxCell id="cls-board" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="Board&lt;div&gt;{leaf}&lt;/div&gt;" vertex="1">
-          <mxGeometry height="190" width="250" x="620" y="260" as="geometry" />
+          <mxGeometry height="206" width="250" x="620" y="260" as="geometry" />
         </mxCell>
         <mxCell id="cls-board-sep" parent="cls-board" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;labelPerimeter=1;" value="" vertex="1">
           <mxGeometry height="8" width="250" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="cls-board-methods" parent="cls-board" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="&lt;u&gt;+ initial(): Board&lt;/u&gt;&lt;div&gt;&lt;u&gt;- initialMap(): Map&amp;lt;Square, Piece&amp;gt;&lt;/u&gt;&lt;/div&gt;&lt;div&gt;+ move(from: Square, to: Square): Board&lt;/div&gt;&lt;div&gt;+ move(move: Move): Board&lt;/div&gt;&lt;div&gt;+ pieceAt(file: File, rank: Rank): Piece&lt;/div&gt;&lt;div&gt;+ pieceAt(notation: String): Piece&lt;/div&gt;&lt;div&gt;+ pieceAt(square: Square): Piece&lt;/div&gt;&lt;div&gt;+ pieces(): Map&amp;lt;Square, Piece&amp;gt;&lt;/div&gt;" vertex="1">
-          <mxGeometry height="142" width="250" y="48" as="geometry" />
+        <mxCell id="cls-board-methods" parent="cls-board" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="&lt;u&gt;+ initial(): Board&lt;/u&gt;&lt;div&gt;&lt;u&gt;+ builder(): Builder&lt;/u&gt;&lt;/div&gt;&lt;div&gt;&lt;u&gt;- initialMap(): Map&amp;lt;Square, Piece&amp;gt;&lt;/u&gt;&lt;/div&gt;&lt;div&gt;+ move(from: Square, to: Square): Board&lt;/div&gt;&lt;div&gt;+ move(move: Move): Board&lt;/div&gt;&lt;div&gt;+ pieceAt(file: File, rank: Rank): Piece&lt;/div&gt;&lt;div&gt;+ pieceAt(notation: String): Piece&lt;/div&gt;&lt;div&gt;+ pieceAt(square: Square): Piece&lt;/div&gt;&lt;div&gt;+ pieces(): Map&amp;lt;Square, Piece&amp;gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="158" width="250" y="48" as="geometry" />
         </mxCell>
 
         <mxCell id="cls-gamepos" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="&amp;lt;&amp;lt;Record&amp;gt;&amp;gt;&lt;div&gt;GamePosition&lt;/div&gt;" vertex="1">
@@ -113,7 +113,7 @@
         <mxCell id="cls-state-sep" parent="cls-state" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;labelPerimeter=1;" value="" vertex="1">
           <mxGeometry height="8" width="180" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="cls-state-methods" parent="cls-state" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="&lt;u&gt;+ init(): State&lt;/u&gt;&lt;div&gt;+ nextTurn(): State&lt;/div&gt;" vertex="1">
+        <mxCell id="cls-state-methods" parent="cls-state" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="&lt;u&gt;+ init(): State&lt;/u&gt;&lt;div&gt;+ nextTurn(move: Move): State&lt;/div&gt;" vertex="1">
           <mxGeometry height="52" width="180" y="48" as="geometry" />
         </mxCell>
 
