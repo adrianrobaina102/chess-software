@@ -10,29 +10,68 @@ import software.ulpgc.chess.architecture.ports.out.GameStore;
 import software.ulpgc.chess.architecture.ports.out.PositionSerializer;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 public class GetGameUseCase implements UseCase<String, GetGameUseCase.Output> {
     private final GameStore gameStore;
-    private final GamePositionSerializer serializer;
-    private final CheckDetector detector;
+    private final GamePositionSerializer gamePositionserializer;
+    private final CheckDetector checkDetector;
     private final GameStatusEvaluator gameStatusEvaluator;
     private final PositionSerializer positionSerializer;
 
-    public GetGameUseCase(GameStore gameStore, GamePositionSerializer serializer, CheckDetector detector, GameStatusEvaluator gameStatusEvaluator, PositionSerializer positionSerializer) {
+    public GetGameUseCase(GameStore gameStore, GamePositionSerializer gamePositionserializer, CheckDetector checkDetector, GameStatusEvaluator gameStatusEvaluator, PositionSerializer positionSerializer) {
         this.gameStore = gameStore;
-        this.serializer = serializer;
-        this.detector = detector;
+        this.gamePositionserializer = gamePositionserializer;
+        this.checkDetector = checkDetector;
         this.gameStatusEvaluator = gameStatusEvaluator;
         this.positionSerializer = positionSerializer;
     }
-
+    public static Builder builder() {
+        return new Builder();
+    }
+    public static class Builder {
+        private GameStore gameStore;
+        private GamePositionSerializer serializer;
+        private CheckDetector checkDetector;
+        private GameStatusEvaluator gameStatusEvaluator;
+        private PositionSerializer positionSerializer;
+        public Builder gameStore(GameStore gameStore) {
+            this.gameStore = gameStore;
+            return this;
+        }
+        public Builder serializer(GamePositionSerializer serializer) {
+            this.serializer = serializer;
+            return this;
+        }
+        public Builder checkDetector(CheckDetector checkDetector) {
+            this.checkDetector = checkDetector;
+            return this;
+        }
+        public Builder gameStatusEvaluator(GameStatusEvaluator gameStatusEvaluator) {
+            this.gameStatusEvaluator = gameStatusEvaluator;
+            return this;
+        }
+        public Builder positionSerializer(PositionSerializer positionSerializer) {
+            this.positionSerializer = positionSerializer;
+            return this;
+        }
+        public GetGameUseCase build() {
+            return new GetGameUseCase(
+                    Objects.requireNonNull(gameStore, "gameStore is required"),
+                    Objects.requireNonNull(serializer, "serializer is required"),
+                    Objects.requireNonNull(checkDetector, "detector is required"),
+                    Objects.requireNonNull(gameStatusEvaluator, "gameStatusEvaluator is required"),
+                    Objects.requireNonNull(positionSerializer, "positionSerializer is required")
+            );
+        }
+    }
     public record Output(String idGame, String fen, String status, String kingSquare ) {}
     @Override
     public Output execute(String idGame) {
         return gameStore.load(idGame).map(gamePosition -> buildOutput(idGame, gamePosition)).orElseThrow(() -> new NoSuchElementException("Partida no encontrada: " + idGame));
     }
     private Output buildOutput(String idGame, GamePosition position) {
-        return toOutput(idGame, position, this.serializer, this.gameStatusEvaluator, this.detector, this.positionSerializer);
+        return toOutput(idGame, position, this.gamePositionserializer, this.gameStatusEvaluator, this.checkDetector, this.positionSerializer);
     }
 
     static Output toOutput(

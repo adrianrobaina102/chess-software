@@ -14,6 +14,7 @@ import software.ulpgc.chess.architecture.ports.out.GameStore;
 import software.ulpgc.chess.architecture.ports.out.PositionSerializer;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 public class PlayMoveUseCase implements UseCase<PlayMoveUseCase.Input, GetGameUseCase.Output> {
     public record Input(String idGame, String move) {}
@@ -36,7 +37,57 @@ public class PlayMoveUseCase implements UseCase<PlayMoveUseCase.Input, GetGameUs
         this.checkDetector = checkDetector;
         this.positionSerializer = positionSerializer;
     }
-
+    public static PlayMoveUseCase.Builder builder() {
+        return new PlayMoveUseCase.Builder();
+    }
+    public static class Builder {
+        private GameStatusEvaluator gameStatusEvaluator;
+        private GameStore gameStore;
+        private MoveDeserializer moveDeserializer;
+        private MoveValidator moveValidator;
+        private GamePositionSerializer gamePositionSerializer;
+        private CheckDetector checkDetector;
+        private PositionSerializer positionSerializer;
+        public Builder gameStatusEvaluator(GameStatusEvaluator gameStatusEvaluator) {
+            this.gameStatusEvaluator = gameStatusEvaluator;
+            return this;
+        }
+        public Builder gameStore(GameStore gameStore) {
+            this.gameStore = gameStore;
+            return this;
+        }
+        public Builder moveDeserializer(MoveDeserializer moveDeserializer) {
+            this.moveDeserializer = moveDeserializer;
+            return this;
+        }
+        public Builder moveValidator(MoveValidator moveValidator) {
+            this.moveValidator = moveValidator;
+            return this;
+        }
+        public Builder gamePositionSerializer(GamePositionSerializer gamePositionSerializer) {
+            this.gamePositionSerializer = gamePositionSerializer;
+            return this;
+        }
+        public Builder checkDetector(CheckDetector checkDetector) {
+            this.checkDetector = checkDetector;
+            return this;
+        }
+        public Builder positionSerializer(PositionSerializer positionSerializer) {
+            this.positionSerializer = positionSerializer;
+            return this;
+        }
+        public PlayMoveUseCase build() {
+            return new PlayMoveUseCase(
+                    Objects.requireNonNull(gameStatusEvaluator, "gameStatusEvaluator is required"),
+                    Objects.requireNonNull(gameStore, "gameStore is required"),
+                    Objects.requireNonNull(moveDeserializer, "moveDeserializer is required"),
+                    Objects.requireNonNull(moveValidator, "moveValidator is required"),
+                    Objects.requireNonNull(gamePositionSerializer, "gamePositionSerializer is required"),
+                    Objects.requireNonNull(checkDetector, "checkDetector is required"),
+                    Objects.requireNonNull(positionSerializer, "positionSerializer is required")
+            );
+        }
+    }
 
     @Override
     public GetGameUseCase.Output execute(PlayMoveUseCase.Input input) {

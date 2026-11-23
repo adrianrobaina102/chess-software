@@ -59,12 +59,22 @@ public class Main {
         // 2. Casos de uso (Pure DI)
         GetInitialBoardUseCase getInitialBoardUseCase = new GetInitialBoardUseCase(gamePositionSerializer);
         CreateGameUseCase createGameUseCase = new CreateGameUseCase(gameStore, gamePositionSerializer);
-        GetGameUseCase getGameUseCase = new GetGameUseCase(
-                gameStore, gamePositionSerializer, checkDetector, gameStatusEvaluator, positionSerializer
-        );
-        PlayMoveUseCase playMoveUseCase = new PlayMoveUseCase(
-                gameStatusEvaluator, gameStore, moveDeserializer, moveValidator, gamePositionSerializer, checkDetector, positionSerializer
-        );
+        GetGameUseCase getGameUseCase = GetGameUseCase.builder()
+                .gameStore(gameStore)
+                .serializer(gamePositionSerializer)
+                .checkDetector(checkDetector)
+                .gameStatusEvaluator(gameStatusEvaluator)
+                .positionSerializer(positionSerializer)
+                .build();
+        PlayMoveUseCase playMoveUseCase = PlayMoveUseCase.builder()
+                .gameStatusEvaluator(gameStatusEvaluator)
+                .gameStore(gameStore)
+                .moveDeserializer(moveDeserializer)
+                .moveValidator(moveValidator)
+                .gamePositionSerializer(gamePositionSerializer)
+                .checkDetector(checkDetector)
+                .positionSerializer(positionSerializer)
+                .build();
         MovePieceUseCase movePieceUseCase = new MovePieceUseCase(gamePositionDeserializer, moveDeserializer, gamePositionSerializer, moveValidator);
         GetAvailableMovesUseCase getAvailableMovesUseCase = new GetAvailableMovesUseCase(
                 positionSerializer, positionDeserializer, moveValidator, gamePositionDeserializer
