@@ -16,14 +16,19 @@ public class GameStatusEvaluator {
     }
     public GameStatus evaluate(GamePosition position)
     {
-        boolean inCheck = checkDetector.isKingInCheck(position.board(), position.state().side());
-        boolean hasMoves = hasAnyLegalMove(position.board(), position.state().side());
-        if (!hasMoves)
-            return inCheck ? GameStatus.Checkmate :  GameStatus.Stalemate;
-        else
-            return inCheck ? GameStatus.Check : GameStatus.Playing;
+        if (!hasAnyLegalMove(position))
+            return isInCheck(position) ? GameStatus.Checkmate :  GameStatus.Stalemate;
+        return isInCheck(position) ? GameStatus.Check : GameStatus.Playing;
     }
-    public boolean hasAnyLegalMove(Board board, Color side)
+    public boolean isInCheck(GamePosition position)
+    {
+        return checkDetector.isKingInCheck(position.board(), position.state().side());
+    }
+    public boolean hasAnyLegalMove(GamePosition position)
+    {
+        return hasAnyLegalMove(position.board(), position.state().side());
+    }
+    private boolean hasAnyLegalMove(Board board, Color side)
     {
         return board.pieces().entrySet().stream()
                 .filter(entry -> entry.getValue().color().equals(side))

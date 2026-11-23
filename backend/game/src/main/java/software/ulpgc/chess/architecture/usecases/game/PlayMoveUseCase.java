@@ -13,6 +13,7 @@ import software.ulpgc.chess.architecture.ports.out.GamePositionSerializer;
 import software.ulpgc.chess.architecture.ports.out.GameStore;
 import software.ulpgc.chess.architecture.ports.out.PositionSerializer;
 
+import javax.swing.text.Position;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -94,8 +95,7 @@ public class PlayMoveUseCase implements UseCase<PlayMoveUseCase.Input, GetGameUs
         GamePosition position = this.gameStore.load(input.idGame())
                 .orElseThrow(() -> new NoSuchElementException("Partida no encontrada: " + input.idGame()));
         Move move = this.moveDeserializer.deserialize(input.move());
-        Piece piece = position.board().pieceAt(move.from());
-        if (piece == null || piece.color() != position.state().side() || !this.moveValidator.isValid(position.board(), move)) {
+        if (! isLegalMove(position, move)) {
             throw new IllegalArgumentException("Movimiento inválido: " + input.move());
         }
         GamePosition next = position.move(move);
@@ -103,5 +103,14 @@ public class PlayMoveUseCase implements UseCase<PlayMoveUseCase.Input, GetGameUs
         return GetGameUseCase.toOutput(
                 input.idGame(), next, this.gamePositionSerializer, this.gameStatusEvaluator, this.checkDetector, this.positionSerializer
         );
+    }
+    private boolean isLegalMove(GamePosition position, Move move) {
+        return pieceAt(position, move) != null
+                && pieceAt(position, move).color() == position.state().side()
+                && this.moveValidator.isValid(position.board(), move);
+    }
+
+    private Piece pieceAt(GamePosition position, Move move) {
+        return position.board().pieceAt(move.from());
     }
 }
