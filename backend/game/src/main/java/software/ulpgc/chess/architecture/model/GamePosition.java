@@ -9,6 +9,6 @@ public record GamePosition (Board board, State state) {
         return new GamePosition(Board.initial(), State.init());
     }
     public GamePosition move(Move move){
-        return new GamePosition(board.move(move), state.nextTurn());
+        return new GamePosition(board.move(move), state.nextTurn(move));
     }
 }
