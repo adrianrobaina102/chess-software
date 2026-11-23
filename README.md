@@ -15,6 +15,7 @@ El propósito de este proyecto es desarrollar un sistema que permita crear salas
   * `JUnit 5 (Jupiter 6.1.3)`: Para la ejecución de pruebas unitarias automatizadas (`scope: test`).
   * `AssertJ Core (3.27.7)`: Librería de aserciones fluidas para las pruebas unitarias (`scope: test`).
   * `Javalin (6.1.3)`: Framework ligero para el servidor web y la API REST HTTP.
+  * `Gson`: Serialización y deserialización JSON en los endpoints REST.
   * `SLF4J Simple (2.0.12)`: Implementación de logging para registrar eventos del servidor web.
 
 ## 3. Compilación y ejecución
@@ -38,9 +39,15 @@ Para arrancar el servidor web de ajedrez con Javalin:
 2. El servidor arrancará por defecto en el puerto `7070`.
 3. Puntos de acceso:
    * **Aplicación Web interactiva:** Abrir en el navegador [`http://localhost:7070`](http://localhost:7070)
-   * **API - Obtener tablero inicial:** `GET http://localhost:7070/api/board/initial`
-   * **API - Aplicar un movimiento:** `GET http://localhost:7070/api/board/move?board=<FEN>&move=<UCI>`
-     * Ejemplo: `http://localhost:7070/api/board/move?board=rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR&move=e2e4`
+   * **API de Partidas persistidas (`/api/games`):**
+     * `POST http://localhost:7070/api/games` — Crea una partida nueva y devuelve `{ idGame, fen, status }`.
+     * `GET http://localhost:7070/api/games?id={idGame}` — Recupera una partida guardada (`200` o `404`).
+     * `PUT http://localhost:7070/api/games?id={idGame}&move={uci}` — Aplica un movimiento válido y persiste la partida (`200`, `400` o `404`).
+   * **API Stateless de Tablero (`/api/board/*`):**
+     * `GET http://localhost:7070/api/board/initial`
+     * `GET http://localhost:7070/api/board/move?board={fen}&move={uci}`
+     * `GET http://localhost:7070/api/board/moves?board={fen}&square={sq}`
+     * `GET http://localhost:7070/api/board/status?board={fen}`
 
 ## 4. Estructura del proyecto
 <!-- NOTA: Actualiza este árbol si creas nuevos paquetes (ej. application / usecases, persistence, ui, network...) -->
@@ -63,41 +70,23 @@ chess-software/
             ├── main/
             │   └── java/software/ulpgc/chess/
             │       ├── architecture/           # El Core (Puro, sin dependencias externas)
-            │       │   ├── domain/             # Casos de uso y orquestación de negocio
-            │       │   │   ├── UseCase.java
-            │       │   │   ├── GetInitialBoardUseCase.java
-            │       │   │   └── MovePieceUseCase.java
-            │       │   ├── model/              # Entidades y objetos de valor inmutables
-            │       │   │   ├── Board.java
-            │       │   │   ├── Square.java
-            │       │   │   ├── Move.java
-            │       │   │   ├── Piece.java
-            │       │   │   ├── Color.java
-            │       │   │   ├── File.java
-            │       │   │   ├── Rank.java
-            │       │   │   └── State.java
-            │       │   └── ports/              # Interfaces de entrada y salida
-            │       │       ├── in/             # Puertos de entrada (lectura / deserializadores)
-            │       │       └── out/            # Puertos de salida (escritura / serializadores)
-            │       ├── infrastructure/         # El Exterior (Traducción y comunicación)
-            │       │   └── adapters/           # Implementaciones concretas
-            │       │       ├── in/             # Adaptadores de entrada (Javalin EndPoints y Deserializadores)
-            │       │       │   ├── EndPoint.java
-            │       │       │   ├── GetInitialBoardEndPoint.java
-            │       │       │   ├── MovePieceEndPoint.java
-            │       │       │   ├── AlgebraicPositionDeserializer.java
-            │       │       │   ├── FenBoardDeserializer.java
-            │       │       │   ├── FenStateDeserializer.java
-            │       │       │   └── UciMoveDeserializer.java
-            │       │       └── out/            # Adaptadores de salida (Serializadores)
-            │       │           ├── AlgebraicPositionSerializer.java
-            │       │           ├── FenBoardSerializer.java
-            │       │           └── UciMoveSerializer.java
+            │       │   ├── domain/             # Reglas puras y validadores (MoveValidator, CheckDetector, GameStatusEvaluator, rules/)
+            │       │   ├── model/              # Entidades y objetos de valor inmutables (GamePosition, CastlingRight, GameStatus, board/)
+            │       │   ├── ports/              # Interfaces de entrada (in/) y salida/persistencia (out/ incl. GameStore)
+            │       │   └── usecases/           # Casos de uso (board/ y game/)
+            │       ├── infrastructure/         # El Exterior (Traducción, HTTP y persistencia)
+            │       │   └── adapters/
+            │       │       ├── in/
+            │       │       │   ├── rest/       # EndPoints Javalin (/api/games y /api/board/*)
+            │       │       │   └── deserializers/ # Deserializadores FEN, UCI y algebraico
+            │       │       └── out/            # Serializadores FEN/UCI/algebraico y FileGameStore
             │       └── Main.java               # Composition Root / cableado y servidor
             └── test/java/tests/                # Pruebas unitarias automatizadas
-                ├── in/                         # Tests de adaptadores de entrada
-                ├── out/                        # Tests de adaptadores de salida
-                └── usecases/                   # Tests unitarios de casos de uso
+                ├── in/                         # Tests de deserializadores
+                ├── model/                      # Tests de Board, State y GamePosition
+                ├── out/                        # Tests de serializadores y FileGameStore
+                ├── process/                    # Tests de ChessMoveValidator y GameStatusEvaluator
+                └── usecases/                   # Tests unitarios de casos de uso (incl. mocks de GameStore)
 ```
 
 ## 5. Arquitectura de sistemas
@@ -108,8 +97,10 @@ El backend expone su funcionalidad a través de una API HTTP implementada con Ja
 
 * **Contrato de comunicación HTTP:**
   * `GET /`: Entrega la aplicación SPA web (`index.html`, `style.css`, `app.js`).
-  * `GET /api/board/initial`: Devuelve el estado inicial del tablero en formato FEN (`text/plain`).
-  * `GET /api/board/move?board={fen}&move={uci}`: Recibe el FEN actual y el movimiento en UCI por parámetros de consulta (`query params`), delega en el caso de uso y responde con el nuevo FEN resultante.
+  * `POST /api/games`: Crea una nueva partida inicial, la persiste en `FileGameStore` y responde `201` con JSON `{ idGame, fen, status }`.
+  * `GET /api/games?id={idGame}`: Consulta una partida persistida y responde `200` con `{ idGame, fen, status, kingSquare }` (o `400`/`404` en JSON).
+  * `PUT /api/games?id={idGame}&move={uci}`: Valida turno y legalidad del movimiento, actualiza y guarda la partida y devuelve `200` con el nuevo estado (o `400`/`404`).
+  * `GET /api/board/initial`, `/api/board/move`, `/api/board/moves`, `/api/board/status`: Endpoints stateless sobre un FEN recibido por query param.
 
 ## 6. Arquitectura hexagonal del Backend
 
@@ -163,7 +154,7 @@ Implementaciones concretas de los puertos organizadas en entrada (`in`) y salida
      - Puerto de servicio y su adaptador de red (HTTP/WebSocket) para hablar con el backend. -->
 El frontend está implementado como una aplicación web ligera (Single Page Application sin dependencias externas) alojada en la raíz `frontend/`:
 * **Vista (`index.html` y `style.css`):** Renderiza el tablero de ajedrez en una cuadrícula CSS 8x8 con glifos tipográficos Unicode oficiales (♔, ♕, ♖, ♗, ♘, ♙...), junto a controles de reinicio e indicador de estado/FEN.
-* **Controlador (`app.js` - `ChessGameClient`):** Gestiona los clics del usuario en las casillas (origen y destino), compone la jugada en formato UCI (ej. `e2e4`) y se comunica mediante llamadas asíncronas (`fetch`) con los endpoints del backend (`/api/board/initial` y `/api/board/move`).
+* **Controlador (`app.js` - `ChessGameClient`):** Gestiona los clics del usuario, persiste el `idGame` en `localStorage` para recuperar la partida tras recargar (`GET /api/games`), crea nuevas partidas (`POST /api/games`), consulta movimientos disponibles (`GET /api/board/moves`) y envía jugadas (`PUT /api/games`).
 
 ## 8. Modelo de datos y conexión de usuarios
 <!-- NOTA: Explica aquí:
@@ -188,12 +179,14 @@ El frontend está implementado como una aplicación web ligera (Single Page Appl
 <!-- NOTA: 
      - Si añades más clases de test en el paquete `tests` (incluyendo pruebas con Mocks / dobles de prueba), añádelas al listado.
      - Documenta también las pruebas manuales que pide la rúbrica (conectar 2 usuarios, probar qué pasa si mandas un movimiento inválido o pides una sala que no existe). -->
-El repositorio incluye 28 pruebas unitarias automatizadas con JUnit 5 y AssertJ en el módulo `backend/game`, organizadas por paquete:
-* **`tests.algebraic`:** `AlgebraicPositionSerializerTest` y `AlgebraicPositionDeserializerTest`.
-* **`tests.fen`:** `FenBoardSerializerTest`, `FenBoardDeserializerTest` y `FenStateDeserializerTest`.
-* **`tests.uci`:** `UciMoveSerializerTest` y `UciMoveDeserializerTest`.
-* **`tests.usecases`:** `GetInitialBoardUseCaseTest` y `MovePieceUseCaseTest`.
+El repositorio incluye **77 pruebas unitarias automatizadas** con JUnit 5 y AssertJ en el módulo `backend/game`, organizadas por paquete:
+* **`tests.in`:** `AlgebraicPositionDeserializerTest`, `FenBoardDeserializerTest`, `FenGamePositionDeserializerTest`, `FenStateDeserializerTest` y `UciMoveDeserializerTest`.
+* **`tests.model`:** `BoardTest`, `StateTest` y `GamePositionTest`.
+* **`tests.out`:** `AlgebraicPositionSerializerTest`, `FenBoardSerializerTest`, `FenGamePositionSerializerTest`, `FenStateSerializerTest`, `FileGameStoreTest` y `UciMoveSerializerTest`.
+* **`tests.process`:** `ChessMoveValidatorTest` y `GameStatusEvaluatorTest`.
+* **`tests.usecases`:** `CreateGameUseCaseTest`, `GetGameUseCaseTest`, `PlayMoveUseCaseTest`, `GetInitialBoardUseCaseTest`, `MovePieceUseCaseTest`, `GetAvailableMovesUseCaseTest` y `GetGameStatusUseCaseTest`.
 
 ## 12. Límites conocidos
-<!-- NOTA: Actualiza esta sección según avances. Sé transparente con qué reglas de ajedrez validas y cuáles no (ej. si no implementas jaque mate o tablas por triple repetición), o límites de concurrencia. -->
-* En la fase actual, el método `Board.move()` actualiza la posición de las piezas en el mapa del tablero pero aún no aplica validación de reglas de movimiento legal (turnos, jaques o trayectorias bloqueadas).
+* Validación completa de reglas estándar implementada (turnos, trayectorias, jaques, jaque mate, ahogado y coronación automática a Reina).
+* Enroque: ya están implementados el seguimiento de `CastlingRight` en `State` y el desplazamiento simultáneo rey + torre en `GamePosition`; falta la validación de casillas vacías y no paso por jaque en el validador.
+* Pendiente de implementar: captura al paso (*en passant*), selector de subpromoción (`q/r/b/n`), y módulos de usuarios/salas multijugador.
